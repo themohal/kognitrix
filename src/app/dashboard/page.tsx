@@ -53,7 +53,7 @@ export default function DashboardPage() {
         .eq("user_id", user!.id);
 
       const totalCredits =
-        logs?.reduce((sum, log) => sum + log.credits_used, 0) ?? 0;
+        logs?.reduce((sum: number, log: { credits_used: number }) => sum + log.credits_used, 0) ?? 0;
 
       setUsage({
         total_requests: count ?? 0,
