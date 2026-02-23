@@ -41,7 +41,7 @@ export function checkCredits(user: Profile, requiredCredits: number): void {
   if (user.credits_balance < requiredCredits) {
     throw new ApiError(
       402,
-      `Insufficient credits. Required: ${requiredCredits}, Available: ${user.credits_balance}. Purchase more at https://kognitrix.ai/dashboard/billing`
+      `Insufficient credits. Required: ${requiredCredits}, Available: ${user.credits_balance}. Purchase more at https://kognitrix.vercel.app/dashboard/billing`
     );
   }
 }
@@ -106,7 +106,7 @@ export function checkRateLimit(user: Profile): void {
   if (entry.count > plan.requests_per_min) {
     throw new ApiError(
       429,
-      `Rate limit exceeded. Your plan allows ${plan.requests_per_min} requests/minute. Upgrade at https://kognitrix.ai/dashboard/billing`
+      `Rate limit exceeded. Your plan allows ${plan.requests_per_min} requests/minute. Upgrade at https://kognitrix.vercel.app/dashboard/billing`
     );
   }
 }
