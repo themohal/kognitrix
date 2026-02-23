@@ -61,9 +61,6 @@ export default function Footer() {
           <p className="text-sm text-muted-foreground mono">
             &copy; {new Date().getFullYear()} Kognitrix AI. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground/60 mono">
-            Founded by Muhammad Farjad Ali Raza & AI Super Agent
-          </p>
         </div>
       </div>
     </footer>
