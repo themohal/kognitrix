@@ -6,6 +6,7 @@ export async function GET() {
       issuer: "https://kognitrix.vercel.app",
       authorization_endpoint: "https://kognitrix.vercel.app/dashboard",
       token_endpoint: "https://kognitrix.vercel.app/api/mcp",
+      registration_endpoint: "https://kognitrix.vercel.app/api/oauth/register",
       token_endpoint_auth_methods_supported: ["none"],
       grant_types_supported: ["urn:ietf:params:oauth:grant-type:token-exchange"],
       response_types_supported: ["token"],
