@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
-import { useCredits } from "@/hooks/useCredits";
+import { useCredits, broadcastCreditsUpdate } from "@/hooks/useCredits";
 import { useEffect } from "react";
 import { SERVICES_CONFIG } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,7 +91,7 @@ export default function ServicePlaygroundPage() {
         setError(data.error || "Request failed");
       } else {
         setResult(JSON.stringify(data.data, null, 2));
-        fetchBalance();
+        broadcastCreditsUpdate();
       }
     } catch (err) {
       setError("Network error. Please try again.");
