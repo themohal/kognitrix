@@ -13,34 +13,35 @@ export function useUser() {
   useEffect(() => {
     const supabase = createClient();
 
-    async function getUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+    async function fetchProfile(u: User) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", u.id)
+        .single();
+      if (data) setProfile(data as Profile);
+    }
 
-      if (user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-        setProfile(data as Profile | null);
+    async function init() {
+      // Use getSession() — reads from cookie/localStorage, no network call
+      // Much more reliable than getUser() which requires a Supabase round-trip
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUser(session.user);
+        await fetchProfile(session.user);
       }
-
       setLoading(false);
     }
 
-    getUser();
+    init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event: string, session: { user: User } | null) => {
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          const { data } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
-          setProfile(data as Profile | null);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (_event: any, session: any) => {
+        const u = session?.user ?? null;
+        setUser(u);
+        if (u) {
+          await fetchProfile(u);
         } else {
           setProfile(null);
         }
