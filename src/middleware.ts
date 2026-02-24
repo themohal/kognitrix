@@ -72,8 +72,11 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except static files and images
+     * Only run middleware on dashboard and auth pages.
+     * Exclude API routes — they use Bearer token auth, not cookies.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/dashboard/:path*",
+    "/login",
+    "/signup",
   ],
 };
