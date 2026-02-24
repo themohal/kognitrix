@@ -23,8 +23,6 @@ export function useUser() {
     }
 
     async function init() {
-      // Use getSession() — reads from cookie/localStorage, no network call
-      // Much more reliable than getUser() which requires a Supabase round-trip
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
@@ -36,14 +34,22 @@ export function useUser() {
     init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      async (_event: any, session: any) => {
-        const u = session?.user ?? null;
-        setUser(u);
-        if (u) {
-          await fetchProfile(u);
-        } else {
-          setProfile(null);
+      async (event: string, session: any) => {
+        // Only update state on explicit sign-in/sign-out events
+        // Ignore TOKEN_REFRESHED failures and other transient events
+        // that can happen when Supabase is temporarily unreachable
+        if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+          const u = session?.user ?? null;
+          setUser(u);
+          if (u) await fetchProfile(u);
+        } else if (event === "SIGNED_OUT") {
+          // Only clear state if there's genuinely no session cookie
+          // (i.e., user explicitly signed out, not a network failure)
+          const { data: { session: currentSession } } = await supabase.auth.getSession();
+          if (!currentSession) {
+            setUser(null);
+            setProfile(null);
+          }
         }
       }
     );

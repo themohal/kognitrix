@@ -1,4 +1,3 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const SECURITY_HEADERS: Record<string, string> = {
@@ -10,76 +9,53 @@ const SECURITY_HEADERS: Record<string, string> = {
   "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
 };
 
-export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
+function applySecurityHeaders(response: NextResponse) {
+  Object.entries(SECURITY_HEADERS).forEach(([k, v]) =>
+    response.headers.set(k, v)
   );
+}
 
-  // Check session — reads from cookie without a network call
-  // getUser() requires a Supabase network round-trip which can fail in edge runtime
-  let user = null;
-  try {
-    const { data } = await supabase.auth.getSession();
-    user = data.session?.user ?? null;
-  } catch {
-    // If session check fails, allow the request through
-    // rather than force-redirect to login on a network error
-    Object.entries(SECURITY_HEADERS).forEach(([k, v]) =>
-      supabaseResponse.headers.set(k, v)
-    );
-    return supabaseResponse;
+function hasSession(request: NextRequest): boolean {
+  // Supabase stores the session in a cookie named sb-<project-ref>-auth-token
+  // Check for any sb-*-auth-token cookie with a value
+  for (const cookie of request.cookies.getAll()) {
+    if (
+      (cookie.name.startsWith("sb-") && cookie.name.endsWith("-auth-token")) ||
+      cookie.name === "supabase-auth-token"
+    ) {
+      return !!cookie.value;
+    }
   }
+  return false;
+}
+
+export async function middleware(request: NextRequest) {
+  const response = NextResponse.next({ request });
+  applySecurityHeaders(response);
 
   const pathname = request.nextUrl.pathname;
+  const isLoggedIn = hasSession(request);
 
-  // Protect dashboard routes
-  if (pathname.startsWith("/dashboard") && !user) {
+  // Protect dashboard routes — redirect to login if no session cookie
+  if (pathname.startsWith("/dashboard") && !isLoggedIn) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", pathname);
     const redirectResponse = NextResponse.redirect(url);
-    Object.entries(SECURITY_HEADERS).forEach(([k, v]) =>
-      redirectResponse.headers.set(k, v)
-    );
+    applySecurityHeaders(redirectResponse);
     return redirectResponse;
   }
 
   // Redirect logged-in users away from auth pages
-  if ((pathname === "/login" || pathname === "/signup") && user) {
+  if ((pathname === "/login" || pathname === "/signup") && isLoggedIn) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     const redirectResponse = NextResponse.redirect(url);
-    Object.entries(SECURITY_HEADERS).forEach(([k, v]) =>
-      redirectResponse.headers.set(k, v)
-    );
+    applySecurityHeaders(redirectResponse);
     return redirectResponse;
   }
 
-  // Apply security headers to normal response
-  Object.entries(SECURITY_HEADERS).forEach(([k, v]) =>
-    supabaseResponse.headers.set(k, v)
-  );
-
-  return supabaseResponse;
+  return response;
 }
 
 export const config = {
