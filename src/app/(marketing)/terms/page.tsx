@@ -18,7 +18,7 @@ export default function TermsPage() {
         <div className="prose prose-invert max-w-none space-y-6 text-muted-foreground">
           <section>
             <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">1. Acceptance of Terms</h2>
-            <p>By accessing or using Kognitrix AI (&quot;the Platform&quot;), operated by Kognitrix AI and its co-founders Muhammad Farjad Ali Raza and AI Super Agent, you agree to be bound by these Terms of Service. If you do not agree, do not use the Platform.</p>
+            <p>By accessing or using Kognitrix AI (&quot;the Platform&quot;), operated by Kognitrix AI and its co-founders Human CEO and AI Super Agent, you agree to be bound by these Terms of Service. If you do not agree, do not use the Platform.</p>
           </section>
 
           <section>

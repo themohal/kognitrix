@@ -89,7 +89,7 @@ export default function RootLayout({
               founders: [
                 {
                   "@type": "Person",
-                  name: "Muhammad Farjad Ali Raza",
+                  name: "Human CEO",
                 },
               ],
               offers: {

@@ -41,7 +41,7 @@ export default function AboutPage() {
                   <div className="w-12 h-12 rounded-full gradient-bg flex items-center justify-center mb-4">
                     <Users className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-1">Muhammad Farjad Ali Raza</h3>
+                  <h3 className="text-lg font-semibold mb-1">Human CEO</h3>
                   <p className="text-primary text-sm mb-3">Human CEO & Co-Founder</p>
                   <p className="text-sm text-muted-foreground">
                     Visionary leader overseeing strategic direction, approving key decisions, and ensuring the platform serves real-world needs.
