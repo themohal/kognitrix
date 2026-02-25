@@ -61,7 +61,8 @@ export async function POST(request: Request) {
 
     if (!res.ok) {
       console.error("LemonSqueezy checkout error:", JSON.stringify(data));
-      return NextResponse.json({ error: "Failed to create checkout" }, { status: 500 });
+      const detail = data?.errors?.[0]?.detail || data?.message || JSON.stringify(data);
+      return NextResponse.json({ error: `Checkout failed: ${detail}` }, { status: 500 });
     }
 
     const checkoutUrl = data.data.attributes.url;
