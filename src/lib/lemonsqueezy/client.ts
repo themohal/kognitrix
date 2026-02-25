@@ -16,5 +16,5 @@ export function initLemonSqueezy() {
 
 export function getCheckoutUrl(variantId: string, userId: string, userEmail: string): string {
   const storeId = process.env.LEMONSQUEEZY_STORE_ID;
-  return `https://krakenx.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][user_id]=${userId}&checkout[email]=${encodeURIComponent(userEmail)}&checkout[custom][source]=dashboard`;
+  return `https://krakenx.lemonsqueezy.com/checkout?variant=${variantId}&checkout[custom][user_id]=${userId}&checkout[email]=${encodeURIComponent(userEmail)}&checkout[custom][source]=dashboard`;
 }
