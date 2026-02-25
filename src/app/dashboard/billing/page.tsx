@@ -47,7 +47,7 @@ export default function BillingPage() {
   }, [user?.id]);
 
   const buildCheckoutUrl = (variantId: string) => {
-    const storeSlug = "kognitrix";
+    const storeSlug = "krakenx";
     return `https://${storeSlug}.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][user_id]=${user!.id}&checkout[email]=${encodeURIComponent(user!.email!)}&checkout[custom][source]=dashboard`;
   };
 
