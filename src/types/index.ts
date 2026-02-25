@@ -132,10 +132,10 @@ export const PLANS: Record<string, PlanInfo> = {
   free_trial: {
     type: 'free_trial',
     name: 'Free Trial',
-    credits_per_month: 50,
+    credits_per_month: 20,
     price_usd: 0,
     requests_per_min: 5,
-    requests_per_day: 50,
+    requests_per_day: 20,
     lemon_squeezy_variant_id: '',
   },
   starter: {
