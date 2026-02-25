@@ -10,10 +10,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { variantId } = await request.json();
+    const { variantId, planKey } = await request.json();
 
-    if (!variantId) {
-      return NextResponse.json({ error: "variantId is required" }, { status: 400 });
+    // Resolve variant ID from plan/pack key if not passed directly
+    const VARIANT_MAP: Record<string, string | undefined> = {
+      starter: process.env.NEXT_PUBLIC_LS_STARTER_VARIANT_ID,
+      pro: process.env.NEXT_PUBLIC_LS_PRO_VARIANT_ID,
+      starter_pack: process.env.NEXT_PUBLIC_LS_PACK_100_VARIANT_ID,
+      growth_pack: process.env.NEXT_PUBLIC_LS_PACK_500_VARIANT_ID,
+      pro_pack: process.env.NEXT_PUBLIC_LS_PACK_1000_VARIANT_ID,
+      mega_pack: process.env.NEXT_PUBLIC_LS_PACK_2000_VARIANT_ID,
+    };
+
+    const resolvedVariantId = variantId || (planKey ? VARIANT_MAP[planKey] : null);
+
+    if (!resolvedVariantId) {
+      return NextResponse.json({ error: "variantId or planKey is required" }, { status: 400 });
     }
 
     const storeId = process.env.LEMONSQUEEZY_STORE_ID;
@@ -50,7 +62,7 @@ export async function POST(request: Request) {
               data: { type: "stores", id: storeId },
             },
             variant: {
-              data: { type: "variants", id: variantId },
+              data: { type: "variants", id: resolvedVariantId },
             },
           },
         },
@@ -60,9 +72,10 @@ export async function POST(request: Request) {
     const data = await res.json();
 
     if (!res.ok) {
-      console.error("LemonSqueezy checkout error:", JSON.stringify(data));
+      console.error("LemonSqueezy checkout error:", JSON.stringify(data, null, 2));
+      console.error("LemonSqueezy request details:", { storeId, resolvedVariantId, status: res.status });
       const detail = data?.errors?.[0]?.detail || data?.message || JSON.stringify(data);
-      return NextResponse.json({ error: `Checkout failed: ${detail}` }, { status: 500 });
+      return NextResponse.json({ error: `Checkout failed: ${detail}`, debug: { status: res.status, storeId, variantId: resolvedVariantId } }, { status: 500 });
     }
 
     const checkoutUrl = data.data.attributes.url;

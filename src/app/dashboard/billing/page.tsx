@@ -5,7 +5,6 @@ import { useUser } from "@/hooks/useUser";
 import { useCredits } from "@/context/CreditsContext";
 import { createClient } from "@/lib/supabase/client";
 import { CREDIT_PACKS, PLANS } from "@/types";
-import { getVariantId } from "@/lib/lemonsqueezy/variants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,17 +47,13 @@ export default function BillingPage() {
 
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
-  const openCheckout = async (variantId: string, key: string) => {
-    if (!variantId) {
-      alert("Payment not configured yet. Please try again later.");
-      return;
-    }
-    setCheckoutLoading(key);
+  const openCheckout = async (planKey: string) => {
+    setCheckoutLoading(planKey);
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ variantId }),
+        body: JSON.stringify({ planKey }),
       });
       const data = await res.json();
       if (data.url) {
@@ -74,13 +69,11 @@ export default function BillingPage() {
   };
 
   const handleBuyPack = (packId: string) => {
-    const variantId = getVariantId(packId);
-    openCheckout(variantId, packId);
+    openCheckout(packId);
   };
 
   const handleSubscribe = (planType: string) => {
-    const variantId = getVariantId(planType);
-    openCheckout(variantId, planType);
+    openCheckout(planType);
   };
 
   return (
