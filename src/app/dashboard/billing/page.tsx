@@ -46,26 +46,41 @@ export default function BillingPage() {
     fetchTransactions();
   }, [user?.id]);
 
-  const buildCheckoutUrl = (variantId: string) => {
-    return `https://krakenx.lemonsqueezy.com/checkout?variant=${variantId}&checkout[custom][user_id]=${user!.id}&checkout[email]=${encodeURIComponent(user!.email!)}&checkout[custom][source]=dashboard`;
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  const openCheckout = async (variantId: string, key: string) => {
+    if (!variantId) {
+      alert("Payment not configured yet. Please try again later.");
+      return;
+    }
+    setCheckoutLoading(key);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ variantId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.open(data.url, "_blank");
+      } else {
+        alert(data.error || "Failed to create checkout.");
+      }
+    } catch {
+      alert("Failed to create checkout. Please try again.");
+    } finally {
+      setCheckoutLoading(null);
+    }
   };
 
   const handleBuyPack = (packId: string) => {
     const variantId = getVariantId(packId);
-    if (!variantId) {
-      alert("Payment not configured yet. Please try again later.");
-      return;
-    }
-    window.open(buildCheckoutUrl(variantId), "_blank");
+    openCheckout(variantId, packId);
   };
 
   const handleSubscribe = (planType: string) => {
     const variantId = getVariantId(planType);
-    if (!variantId) {
-      alert("Payment not configured yet. Please try again later.");
-      return;
-    }
-    window.open(buildCheckoutUrl(variantId), "_blank");
+    openCheckout(variantId, planType);
   };
 
   return (
@@ -112,8 +127,9 @@ export default function BillingPage() {
                   variant="outline"
                   className="w-full"
                   onClick={() => handleBuyPack(pack.id)}
+                  disabled={checkoutLoading === pack.id}
                 >
-                  Buy Now
+                  {checkoutLoading === pack.id ? "Loading..." : "Buy Now"}
                 </Button>
               </CardContent>
             </Card>
@@ -164,10 +180,10 @@ export default function BillingPage() {
                     <Button
                       variant={isCurrent ? "outline" : "gradient"}
                       className="w-full"
-                      disabled={isCurrent}
+                      disabled={isCurrent || checkoutLoading === key}
                       onClick={() => handleSubscribe(key)}
                     >
-                      {isCurrent ? "Current Plan" : "Subscribe"}
+                      {checkoutLoading === key ? "Loading..." : isCurrent ? "Current Plan" : "Subscribe"}
                     </Button>
                   </CardContent>
                 </Card>
