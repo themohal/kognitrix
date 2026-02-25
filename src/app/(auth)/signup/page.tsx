@@ -80,7 +80,7 @@ export default function SignupPage() {
             </div>
             <CardTitle>Check your email</CardTitle>
             <CardDescription>
-              We&apos;ve sent you a confirmation link. Click it to activate your account and get 50 free credits to start.
+              We&apos;ve sent you a confirmation link. Click it to activate your account and get 20 free credits to start.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -104,7 +104,7 @@ export default function SignupPage() {
             <span className="text-xl font-bold">Kognitrix AI</span>
           </Link>
           <CardTitle>Create your account</CardTitle>
-          <CardDescription>Get 50 free credits to try all AI services</CardDescription>
+          <CardDescription>Get 20 free credits to try all AI services</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">

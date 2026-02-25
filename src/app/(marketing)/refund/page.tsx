@@ -33,7 +33,7 @@ export default function RefundPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">4. Free Trial Credits</h2>
-            <p>The 50 free credits provided on signup are non-refundable and have no cash value. They cannot be transferred or exchanged.</p>
+            <p>The 20 free credits provided on signup are non-refundable and have no cash value. They cannot be transferred or exchanged.</p>
           </section>
 
           <section>

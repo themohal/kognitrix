@@ -87,7 +87,7 @@ export default function AboutPage() {
 
           <section className="text-center">
             <h2 className="text-2xl font-bold mb-4">Ready to get started?</h2>
-            <p className="text-muted-foreground mb-6">Sign up and get 50 free credits to try all our services.</p>
+            <p className="text-muted-foreground mb-6">Sign up and get 20 free credits to try all our services.</p>
             <Button variant="gradient" size="lg" asChild>
               <Link href="/signup">Create Free Account</Link>
             </Button>

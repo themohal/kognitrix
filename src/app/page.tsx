@@ -48,7 +48,7 @@ export default function HomePage() {
 
           <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <Badge variant="secondary" className="mb-6 mono text-xs border-primary/20 bg-primary/5">
-              <Activity className="w-3 h-3 mr-1.5 text-emerald-400" /> System Online &mdash; 50 Free Credits on Signup
+              <Activity className="w-3 h-3 mr-1.5 text-emerald-400" /> System Online &mdash; 20 Free Credits on Signup
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.1]">
               Intelligence-as-a-Service{" "}
@@ -132,7 +132,7 @@ export default function HomePage() {
         <section className="border-y border-border/30 glass py-10 mt-8">
           <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { val: "50", label: "Free credits on signup" },
+              { val: "20", label: "Free credits on signup" },
               { val: "6", label: "AI services" },
               { val: "3", label: "Access channels" },
               { val: "60%+", label: "Cost savings vs direct API" },
@@ -188,7 +188,7 @@ export default function HomePage() {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {[
-                { step: "01", icon: CreditCard, title: "Sign Up & Get Credits", desc: "Create a free account, get 50 credits instantly. Buy more credits or subscribe anytime." },
+                { step: "01", icon: CreditCard, title: "Sign Up & Get Credits", desc: "Create a free account, get 20 credits instantly. Buy more credits or subscribe anytime." },
                 { step: "02", icon: Zap, title: "Choose Your Channel", desc: "Use services via the web dashboard, call our REST API from code, or connect via MCP from your AI agent." },
                 { step: "03", icon: BarChart3, title: "Get Results & Scale", desc: "Receive high-quality AI outputs. Track usage, monitor costs, and scale with your needs." },
               ].map((s) => (
@@ -218,7 +218,7 @@ export default function HomePage() {
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {[
-                { name: "Free Trial", price: "$0", credits: "50 credits", features: ["All 6 services", "Web + API + MCP", "5 req/min"], popular: false },
+                { name: "Free Trial", price: "$0", credits: "20 credits", features: ["All 6 services", "Web + API + MCP", "5 req/min"], popular: false },
                 { name: "Starter", price: "$29/mo", credits: "500 credits/mo", features: ["All 6 services", "30 req/min", "Email support"], popular: false },
                 { name: "Pro", price: "$79/mo", credits: "1,500 credits/mo", features: ["All 6 services", "60 req/min", "Priority support"], popular: true },
               ].map((p) => (
@@ -305,7 +305,7 @@ export default function HomePage() {
               <span className="gradient-text">Kognitrix AI</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-10">
-              50 free credits. 6 AI services. 3 access channels. Zero risk.
+              20 free credits. 6 AI services. 3 access channels. Zero risk.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button variant="gradient" size="xl" asChild>

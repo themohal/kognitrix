@@ -9,7 +9,7 @@ import { Check, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Kognitrix AI pricing — affordable pay-per-use credits and monthly plans. Start free with 50 credits.",
+  description: "Kognitrix AI pricing — affordable pay-per-use credits and monthly plans. Start free with 20 credits.",
 };
 
 const plans = [
@@ -17,7 +17,7 @@ const plans = [
     name: "Free Trial",
     price: "$0",
     period: "one-time",
-    credits: "50 credits",
+    credits: "20 credits",
     description: "Try all services risk-free",
     features: ["All 6 AI services", "Web + API + MCP access", "5 req/min rate limit", "50 requests/day"],
     cta: "Get Started Free",
@@ -64,7 +64,7 @@ export default function PricingPage() {
               Pay for what you use. <span className="gradient-text">Nothing more.</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Start free with 50 credits. Buy credit packs or subscribe for monthly allowances. Same pricing for humans and AI agents.
+              Start free with 20 credits. Buy credit packs or subscribe for monthly allowances. Same pricing for humans and AI agents.
             </p>
           </div>
 

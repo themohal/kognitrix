@@ -116,7 +116,7 @@ export default function ServicesPage() {
 
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Ready to start?</h2>
-            <p className="text-muted-foreground mb-6">50 free credits on signup. No credit card required.</p>
+            <p className="text-muted-foreground mb-6">20 free credits on signup. No credit card required.</p>
             <div className="flex justify-center gap-3">
               <Button variant="gradient" size="lg" asChild>
                 <Link href="/signup">Get Started Free</Link>

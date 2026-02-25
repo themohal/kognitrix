@@ -14,7 +14,7 @@ export async function GET(request: Request) {
         plan_name: plan?.name ?? "Unknown",
         rate_limit: {
           requests_per_min: plan?.requests_per_min ?? 5,
-          requests_per_day: plan?.requests_per_day ?? 50,
+          requests_per_day: plan?.requests_per_day ?? 20,
         },
         credit_packs: CREDIT_PACKS.map((p) => ({
           id: p.id,

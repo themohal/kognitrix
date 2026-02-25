@@ -35,7 +35,7 @@ export async function GET() {
           full_name: fullName,
           avatar_url: session.user.user_metadata?.avatar_url || "",
           api_key: apiKey,
-          credits_balance: 50,
+          credits_balance: 20,
           plan_type: "free_trial",
         })
         .select("*")
