@@ -144,11 +144,35 @@ export default function BillingPage() {
           {Object.entries(PLANS)
             .filter(([key]) => key !== "pay_as_you_go")
             .map(([key, plan]) => {
-              const isCurrent = profile?.plan_type === key;
+              const currentPlan = profile?.plan_type || "free_trial";
+              const isCurrent = currentPlan === key;
+              const planRank: Record<string, number> = { free_trial: 0, starter: 1, pro: 2 };
+              const currentRank = planRank[currentPlan] ?? 0;
+              const thisRank = planRank[key] ?? 0;
+              const isLowerPlan = thisRank < currentRank;
+              const isFreeTrial = key === "free_trial";
+
+              let buttonText = "Subscribe";
+              let isDisabled = false;
+
+              if (isCurrent) {
+                buttonText = "Current Plan";
+                isDisabled = true;
+              } else if (isLowerPlan) {
+                buttonText = "Higher plan active";
+                isDisabled = true;
+              } else if (isFreeTrial) {
+                buttonText = "One-time only";
+                isDisabled = true;
+              } else if (checkoutLoading === key) {
+                buttonText = "Loading...";
+                isDisabled = true;
+              }
+
               return (
                 <Card
                   key={key}
-                  className={`relative ${isCurrent ? "border-primary" : ""}`}
+                  className={`relative ${isCurrent ? "border-primary" : isLowerPlan || isFreeTrial ? "opacity-60" : ""}`}
                 >
                   {isCurrent && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -178,12 +202,12 @@ export default function BillingPage() {
                       </li>
                     </ul>
                     <Button
-                      variant={isCurrent ? "outline" : "gradient"}
+                      variant={isCurrent ? "outline" : isDisabled ? "outline" : "gradient"}
                       className="w-full"
-                      disabled={isCurrent || checkoutLoading === key}
+                      disabled={isDisabled}
                       onClick={() => handleSubscribe(key)}
                     >
-                      {checkoutLoading === key ? "Loading..." : isCurrent ? "Current Plan" : "Subscribe"}
+                      {buttonText}
                     </Button>
                   </CardContent>
                 </Card>
