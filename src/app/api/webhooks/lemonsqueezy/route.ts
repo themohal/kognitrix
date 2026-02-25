@@ -2,6 +2,7 @@ import { verifyWebhookSignature, type LemonSqueezyWebhookEvent } from "@/lib/lem
 import { addCredits } from "@/lib/credits";
 import { createServiceClient } from "@/lib/supabase/server";
 import { CREDIT_PACKS, PLANS } from "@/types";
+import { getVariantId } from "@/lib/lemonsqueezy/variants";
 
 export async function POST(request: Request) {
   try {
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
 
         // Check if it's a credit pack purchase
         const pack = CREDIT_PACKS.find(
-          (p) => p.lemon_squeezy_variant_id === String(variantId)
+          (p) => getVariantId(p.id) === String(variantId)
         );
 
         if (pack) {
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
       case "subscription_created": {
         const variantId = event.data.attributes.variant_id;
         const planEntry = Object.entries(PLANS).find(
-          ([, plan]) => plan.lemon_squeezy_variant_id === String(variantId)
+          ([key]) => getVariantId(key) === String(variantId)
         );
 
         if (planEntry) {

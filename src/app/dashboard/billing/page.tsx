@@ -5,6 +5,7 @@ import { useUser } from "@/hooks/useUser";
 import { useCredits } from "@/context/CreditsContext";
 import { createClient } from "@/lib/supabase/client";
 import { CREDIT_PACKS, PLANS } from "@/types";
+import { getVariantId } from "@/lib/lemonsqueezy/variants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -51,21 +52,21 @@ export default function BillingPage() {
   };
 
   const handleBuyPack = (packId: string) => {
-    const pack = CREDIT_PACKS.find((p) => p.id === packId);
-    if (!pack?.lemon_squeezy_variant_id) {
+    const variantId = getVariantId(packId);
+    if (!variantId) {
       alert("Payment not configured yet. Please try again later.");
       return;
     }
-    window.open(buildCheckoutUrl(pack.lemon_squeezy_variant_id), "_blank");
+    window.open(buildCheckoutUrl(variantId), "_blank");
   };
 
   const handleSubscribe = (planType: string) => {
-    const plan = PLANS[planType];
-    if (!plan?.lemon_squeezy_variant_id) {
+    const variantId = getVariantId(planType);
+    if (!variantId) {
       alert("Payment not configured yet. Please try again later.");
       return;
     }
-    window.open(buildCheckoutUrl(plan.lemon_squeezy_variant_id), "_blank");
+    window.open(buildCheckoutUrl(variantId), "_blank");
   };
 
   return (
