@@ -172,6 +172,30 @@ export const CREDIT_PACKS: CreditPack[] = [
   { id: 'growth_pack', name: 'Growth Pack', credits: 500, price_usd: 35, lemon_squeezy_variant_id: '' },
   { id: 'pro_pack', name: 'Pro Pack', credits: 1000, price_usd: 60, lemon_squeezy_variant_id: '' },
   { id: 'mega_pack', name: 'Mega Pack', credits: 2000, price_usd: 100, lemon_squeezy_variant_id: '' },
+,
+  {
+    name: 'AI Meeting Analyzer & Compliance Scribe',
+    slug: 'meeting-analyzer',
+    description: 'Automatically transcribes meetings, extracts action items, generates compliance-ready summaries, and identifies key decisions for legal, regulatory, and operational records. Perfect for enterprises needing meeting intelligence with guaranteed audit trails.',
+    short_description: 'Turn messy meetings into actionable, compliant documentation instantly',
+    category: 'workflow',
+    credit_cost: 15,
+    is_active: true,
+    icon: 'Mic2',
+    endpoint: '/api/v1/generate/meeting-analyzer',
+  }
+,
+  {
+    name: 'AI Readiness Auditor',
+    slug: 'ai-readiness-auditor',
+    description: 'Automatically audits enterprise data sources for AI readiness—evaluating governance, quality, compliance, and contextualization—then generates actionable remediation roadmaps and governance frameworks. Helps businesses unlock AI ROI by fixing data gaps before deployment.',
+    short_description: 'Audit your data for AI readiness and generate governance compliance reports instantly',
+    category: 'data',
+    credit_cost: 10,
+    is_active: true,
+    icon: 'CheckCircle2',
+    endpoint: '/api/v1/generate/ai-readiness-auditor',
+  }
 ];
 
 export const SERVICES_CONFIG: Omit<Service, 'id' | 'created_at' | 'updated_at'>[] = [
