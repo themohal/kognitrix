@@ -56,7 +56,7 @@ export default function HomePage() {
               <span className="gradient-text">for Humans & Agents</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-              6 powerful AI services accessible via Web Dashboard, REST API, and MCP Server.
+              7 powerful AI services accessible via Web Dashboard, REST API, and MCP Server.
               Pay per use. No subscriptions required. Built for developers and AI agents alike.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
@@ -133,7 +133,7 @@ export default function HomePage() {
           <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { val: "20", label: "Free credits on signup" },
-              { val: "6", label: "AI services" },
+              { val: "7", label: "AI services" },
               { val: "3", label: "Access channels" },
               { val: "60%+", label: "Cost savings vs direct API" },
             ].map((s) => (
@@ -218,9 +218,9 @@ export default function HomePage() {
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {[
-                { name: "Free Trial", price: "$0", credits: "20 credits", features: ["All 6 services", "Web + API + MCP", "5 req/min"], popular: false },
-                { name: "Starter", price: "$29/mo", credits: "500 credits/mo", features: ["All 6 services", "30 req/min", "Email support"], popular: false },
-                { name: "Pro", price: "$79/mo", credits: "1,500 credits/mo", features: ["All 6 services", "60 req/min", "Priority support"], popular: true },
+                { name: "Free Trial", price: "$0", credits: "20 credits", features: ["All 7 services", "Web + API + MCP", "5 req/min"], popular: false },
+                { name: "Starter", price: "$29/mo", credits: "500 credits/mo", features: ["All 7 services", "30 req/min", "Email support"], popular: false },
+                { name: "Pro", price: "$79/mo", credits: "1,500 credits/mo", features: ["All 7 services", "60 req/min", "Priority support"], popular: true },
               ].map((p) => (
                 <Card key={p.name} className={`relative ${p.popular ? "border-primary/50 glow-sm" : ""}`}>
                   {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2"><Badge className="gradient-bg border-0 shadow-lg shadow-primary/20">Most Popular</Badge></div>}
@@ -305,7 +305,7 @@ export default function HomePage() {
               <span className="gradient-text">Kognitrix AI</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-10">
-              20 free credits. 6 AI services. 3 access channels. Zero risk.
+              20 free credits. 7 AI services. 3 access channels. Zero risk.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button variant="gradient" size="xl" asChild>
