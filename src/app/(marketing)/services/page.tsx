@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { FileText, Code, FileSearch, ImageIcon, Database, Languages, Globe, Terminal, Plug } from "lucide-react";
+import { FileText, Code, FileSearch, ImageIcon, Database, Languages, Globe, Terminal, Plug, ClipboardCheckIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "AI Services",
@@ -55,6 +55,13 @@ const services = [
     credits: 3,
     features: ["50+ languages", "Context-aware", "Tone preservation", "Technical accuracy", "Batch translation"],
   },
+  {
+    icon: ClipboardCheckIcon,
+    name: "AI Activity Auditor",
+    description: "Generates compliance audit reports for AI tool usage across enterprises, documenting which employees used which AI systems, what data was processed, and identifying governance gaps for regulatory review. Helps organizations prove they control their AI usage.",
+    credits: 12,
+    features: ["Company Department", "Ai Tools List", "Time Period", "Data Categories Processed", "Regulatory Framework"],
+  },
 ];
 
 export default function ServicesPage() {
@@ -64,7 +71,7 @@ export default function ServicesPage() {
       <main className="pt-24 pb-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <Badge variant="secondary" className="mb-4">6 AI Services</Badge>
+            <Badge variant="secondary" className="mb-4">7 AI Services</Badge>
             <h1 className="text-4xl font-bold mb-4">
               Powerful AI Services, <span className="gradient-text">Three Ways to Access</span>
             </h1>
