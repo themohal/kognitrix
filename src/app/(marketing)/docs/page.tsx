@@ -51,6 +51,7 @@ export default function DocsPage() {
               { method: "POST", path: "/generate/document", desc: "Analyze documents (6 credits)", auth: true },
               { method: "POST", path: "/generate/extract", desc: "Extract structured data (4 credits)", auth: true },
               { method: "POST", path: "/generate/translate", desc: "Translate text (3 credits)", auth: true },
+              { method: "POST", path: "/generate/ai-activity-auditor", desc: "Compliance documentation for enterprise AI usage and shadow AI discovery (12 credits)", auth: true },
             ].map((ep) => (
               <div key={ep.path} className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50 border border-border">
                 <Badge variant={ep.method === "GET" ? "success" : "default"} className="font-mono text-xs w-14 justify-center">
@@ -157,7 +158,7 @@ console.log("Credits remaining:", data.credits_remaining);`}</code>
 }`}</code>
           </pre>
           <p className="text-muted-foreground mb-4">
-            Available MCP tools: <code className="text-primary">kognitrix_generate_content</code>, <code className="text-primary">kognitrix_generate_code</code>, <code className="text-primary">kognitrix_generate_image</code>, <code className="text-primary">kognitrix_analyze_document</code>, <code className="text-primary">kognitrix_extract_data</code>, <code className="text-primary">kognitrix_translate</code>, <code className="text-primary">kognitrix_check_credits</code>, <code className="text-primary">kognitrix_list_services</code>.
+            Available MCP tools: <code className="text-primary">kognitrix_generate_content</code>, <code className="text-primary">kognitrix_generate_code</code>, <code className="text-primary">kognitrix_generate_image</code>, <code className="text-primary">kognitrix_analyze_document</code>, <code className="text-primary">kognitrix_extract_data</code>, <code className="text-primary">kognitrix_translate</code>, <code className="text-primary">kognitrix_ai_activity_auditor</code>, <code className="text-primary">kognitrix_check_credits</code>, <code className="text-primary">kognitrix_list_services</code>.
           </p>
         </section>
 
