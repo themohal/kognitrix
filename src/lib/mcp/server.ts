@@ -8,6 +8,7 @@ import { generateImage } from "@/lib/openai/services/image";
 import { analyzeDocument } from "@/lib/openai/services/document";
 import { extractData } from "@/lib/openai/services/extract";
 import { translateText } from "@/lib/openai/services/translate";
+import { aiActivityAuditor } from "@/lib/openai/services/ai-activity-auditor";
 import type { Profile } from "@/types";
 
 interface McpRequest {
@@ -134,6 +135,12 @@ async function handleToolCall(
         return await translateText(args as unknown as Parameters<typeof translateText>[0]);
       });
     }
+    case "kognitrix_ai_activity_auditor": {
+      return await executeService(id, "ai-activity-auditor", 12, user, ip, async () => {
+        return await aiActivityAuditor(args as unknown as Parameters<typeof aiActivityAuditor>[0]);
+      });
+    }
+
 
     default:
       return { jsonrpc: "2.0", id, error: { code: -32601, message: `Unknown tool: ${name}` } };
