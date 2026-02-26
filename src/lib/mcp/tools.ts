@@ -105,4 +105,19 @@ export const MCP_TOOLS: McpTool[] = [
       required: ["text", "target_language"],
     },
   },
+  {
+    name: "kognitrix_ai_activity_auditor",
+    description: "Compliance documentation for enterprise AI usage and shadow AI discovery. Costs 12 credits.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        company_department: { type: "string", description: "Company Department" },
+        ai_tools_list: { type: "string", description: "Ai Tools List" },
+        time_period: { type: "string", description: "Time Period" },
+        data_categories_processed: { type: "string", description: "Data Categories Processed" },
+        regulatory_framework: { type: "string", description: "Regulatory Framework" },
+      },
+      required: ["company_department", "ai_tools_list", "time_period", "data_categories_processed", "regulatory_framework"],
+    },
+  },
 ];
