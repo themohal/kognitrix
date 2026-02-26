@@ -241,4 +241,16 @@ export const SERVICES_CONFIG: Omit<Service, 'id' | 'created_at' | 'updated_at'>[
     icon: 'Languages',
     endpoint: '/api/v1/generate/translate',
   },
+,
+  {
+    name: 'AI Activity Auditor',
+    slug: 'ai-activity-auditor',
+    description: 'Generates compliance audit reports for AI tool usage across enterprises, documenting which employees used which AI systems, what data was processed, and identifying governance gaps for regulatory review. Helps organizations prove they control their AI usage.',
+    short_description: 'Compliance documentation for enterprise AI usage and shadow AI discovery',
+    category: 'legal',
+    credit_cost: 12,
+    is_active: true,
+    icon: 'ClipboardCheckIcon',
+    endpoint: '/api/v1/generate/ai-activity-auditor',
+  }
 ];
