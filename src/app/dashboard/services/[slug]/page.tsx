@@ -74,6 +74,15 @@ export default function ServicePlaygroundPage() {
         case "translator":
           body = { text: prompt, target_language: extraField || "Spanish" };
           break;
+        case "ai-activity-auditor":
+          body = {
+            company_department: prompt,
+            ai_tools_list: extraField || "",
+            time_period: extraField || "",
+            data_categories_processed: extraField || "",
+            regulatory_framework: extraField || "",
+          };
+          break;
       }
 
       const res = await fetch(service.endpoint, {
@@ -128,6 +137,8 @@ export default function ServicePlaygroundPage() {
         return { label: "Action", placeholder: "summarize, extract, analyze, qa" };
       case "translator":
         return { label: "Target Language", placeholder: "Spanish, French, German, etc." };
+      case "ai-activity-auditor":
+        return { label: "Ai Tools List", placeholder: "Enter ai tools list" };
       default:
         return null;
     }
@@ -177,7 +188,9 @@ export default function ServicePlaygroundPage() {
                   : slug === "document-analyzer"
                   ? "Paste your document text here..."
                   : slug === "data-extractor"
-                  ? "Paste unstructured text to extract data from..."
+                  ? "Paste unstructured text to extract data from..."                  : slug === "ai-activity-auditor"
+                  ? "Describe your activity auditor requirements..."
+
                   : "Enter text to translate..."
               }
               value={prompt}
