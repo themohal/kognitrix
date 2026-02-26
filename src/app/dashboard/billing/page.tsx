@@ -191,7 +191,7 @@ export default function BillingPage() {
                       </li>
                       <li className="text-sm text-muted-foreground flex items-center gap-2">
                         <Check className="w-3 h-3 text-emerald-500" />
-                        All 6 services
+                        All 8 services
                       </li>
                     </ul>
                     <Button
