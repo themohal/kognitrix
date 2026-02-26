@@ -19,7 +19,7 @@ const plans = [
     period: "one-time",
     credits: "20 credits",
     description: "Try all services risk-free",
-    features: ["All 6 AI services", "Web + API + MCP access", "5 req/min rate limit", "50 requests/day"],
+    features: ["All 7 AI services", "Web + API + MCP access", "5 req/min rate limit", "50 requests/day"],
     cta: "Get Started Free",
     popular: false,
   },
@@ -29,7 +29,7 @@ const plans = [
     period: "/month",
     credits: "500 credits/mo",
     description: "For individuals and small teams",
-    features: ["All 6 AI services", "Web + API + MCP access", "30 req/min rate limit", "1,000 requests/day", "Email support"],
+    features: ["All 7 AI services", "Web + API + MCP access", "30 req/min rate limit", "1,000 requests/day", "Email support"],
     cta: "Subscribe",
     popular: false,
   },
@@ -39,7 +39,7 @@ const plans = [
     period: "/month",
     credits: "1,500 credits/mo",
     description: "For growing businesses",
-    features: ["All 6 AI services", "Web + API + MCP access", "60 req/min rate limit", "5,000 requests/day", "Priority support", "Usage analytics"],
+    features: ["All 7 AI services", "Web + API + MCP access", "60 req/min rate limit", "5,000 requests/day", "Priority support", "Usage analytics"],
     cta: "Subscribe",
     popular: true,
   },
@@ -152,6 +152,7 @@ export default function PricingPage() {
                     { name: "AI Document Analyzer", credits: 6, cost: 0.36 },
                     { name: "AI Code Assistant", credits: 8, cost: 0.48 },
                     { name: "AI Image Generator", credits: 10, cost: 0.60 },
+                    { name: "AI Activity Auditor", credits: 12, cost: 0.72 },
                   ].map((s) => (
                     <tr key={s.name} className="border-b border-border">
                       <td className="p-3">{s.name}</td>
