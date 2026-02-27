@@ -109,30 +109,37 @@ export async function deductCredits(params: DeductCreditsParams): Promise<{
   const totalCreditsUsed = allLogs?.reduce((sum, l) => sum + l.credits_used, 0) ?? 0;
 
   // Broadcast realtime update so the browser dashboard updates instantly
+  // Timeout after 3s so a Realtime failure never hangs the API response
   const broadcastChannel = supabase.channel(`user:${params.userId}`);
-  await new Promise<void>((resolve) => {
-    broadcastChannel.subscribe((status: string) => {
-      if (status === "SUBSCRIBED") {
-        broadcastChannel.send({
-          type: "broadcast",
-          event: "credits_updated",
-          payload: {
-            credits_balance: newBalance ?? 0,
-            credits_used: params.creditsUsed,
-            total_requests: totalRequests ?? 0,
-            total_credits_used: totalCreditsUsed,
-            channel: params.channel,
-            request_id: requestId,
-            service_id: serviceUuid || "",
-            created_at: new Date().toISOString(),
-          },
-        }).then(() => {
-          supabase.removeChannel(broadcastChannel);
-          resolve();
-        });
-      }
-    });
-  });
+  await Promise.race([
+    new Promise<void>((resolve) => {
+      broadcastChannel.subscribe((status: string) => {
+        if (status === "SUBSCRIBED") {
+          broadcastChannel.send({
+            type: "broadcast",
+            event: "credits_updated",
+            payload: {
+              credits_balance: newBalance ?? 0,
+              credits_used: params.creditsUsed,
+              total_requests: totalRequests ?? 0,
+              total_credits_used: totalCreditsUsed,
+              channel: params.channel,
+              request_id: requestId,
+              service_id: serviceUuid || "",
+              created_at: new Date().toISOString(),
+            },
+          }).then(() => {
+            supabase.removeChannel(broadcastChannel);
+            resolve();
+          });
+        }
+      });
+    }),
+    new Promise<void>((resolve) => setTimeout(() => {
+      supabase.removeChannel(broadcastChannel);
+      resolve();
+    }, 3000)),
+  ]);
 
   return {
     requestId,

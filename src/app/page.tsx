@@ -56,7 +56,7 @@ export default function HomePage() {
               <span className="gradient-text">for Humans & Agents</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-              6 powerful AI services accessible via Web Dashboard, REST API, and MCP Server.
+              7 powerful AI services accessible via Web Dashboard, REST API, and MCP Server.
               Pay per use. No subscriptions required. Built for developers and AI agents alike.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">

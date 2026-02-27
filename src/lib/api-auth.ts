@@ -56,28 +56,70 @@ export function checkCredits(user: Profile, requiredCredits: number): void {
 const MAX_TEXT_INPUT_LENGTH = 50_000; // ~12,500 tokens
 const MAX_PROMPT_LENGTH = 10_000; // ~2,500 tokens
 
+// ─── Content safety — blocked terms for user input ───────────────────────────
+// Any input containing these terms is rejected before reaching OpenAI
+const BLOCKED_INPUT_PATTERNS: RegExp[] = [
+  // Pornographic / adult content
+  /\b(porn|pornography|pornographic|xxx|nsfw|onlyfans|nude|nudity|naked|erotic|erotica|hentai|fetish|masturbat|orgasm|penis|vagina|genitals?|breasts?\s+naked|sex\s+tape|sex\s+video|strip\s*tease|camgirl|adult\s+content|explicit\s+content|sexual\s+content)\b/i,
+  // Sexual solicitation
+  /\b(escort|prostitut|call\s*girl|sex\s*work|brothel|onlyfans\s+content|lewd|obscene)\b/i,
+  // Malware / hacking
+  /\b(malware|ransomware|keylogger|rootkit|trojan|spyware|botnet|ddos|sql\s*injection|xss\s*attack|exploit\s*code|zero.?day\s*exploit|reverse\s*shell|payload\s*inject|buffer\s*overflow|privilege\s*escal)\b/i,
+  // Credential theft / phishing
+  /\b(phishing\s*(email|page|site|kit)|credential\s*harvest|password\s*steal|login\s*spoof|fake\s*(login|signin)\s*page)\b/i,
+  // Weapons / violence
+  /\b(how\s+to\s+(make|build|create|assemble)\s+(bomb|explosive|weapon|gun|grenade|poison|bioweapon)|instructions?\s+for\s+kill|step.by.step\s+murder)\b/i,
+  // Drug synthesis
+  /\b(synthesize?\s+(meth|heroin|cocaine|fentanyl|mdma)|drug\s+synthesis|how\s+to\s+make\s+(meth|heroin|crack\s+cocaine))\b/i,
+  // Child safety — absolute block
+  /\b(child\s*(porn|sex|nude|naked|abuse|exploit)|csam|minor\s*(sex|nude|porn|naked)|underage\s*(sex|porn|nude))\b/i,
+  // Scam / fraud generation
+  /\b(write\s+(a\s+)?scam|generate\s+(a\s+)?scam|create\s+(a\s+)?scam|ponzi|write\s+(a\s+)?(fake|fraudulent)\s+(invoice|receipt|document|id)|fake\s+passport|counterfeit)\b/i,
+  // Hate speech / threats
+  /\b(kill\s+all\s+\w+|death\s+to\s+\w+|genocide\s+of|exterminate\s+(the\s+)?\w+|ethnic\s+cleansing)\b/i,
+];
+
+export function scanInputSafety(text: string): void {
+  for (const pattern of BLOCKED_INPUT_PATTERNS) {
+    if (pattern.test(text)) {
+      throw new ApiError(
+        400,
+        "Input contains content that violates our usage policy. Kognitrix AI does not support harmful, explicit, or malicious content."
+      );
+    }
+  }
+}
+
 export function validateInput(
   body: Record<string, unknown>,
-  type: "prompt" | "text"
+  requiredField: string
 ): void {
-  const field = type === "prompt" ? "prompt" : "text";
-  const value = body[field];
-  const maxLen = type === "prompt" ? MAX_PROMPT_LENGTH : MAX_TEXT_INPUT_LENGTH;
+  const value = body[requiredField];
 
   if (!value || typeof value !== "string") {
-    throw new ApiError(400, `Missing required field: ${field} (string)`);
+    throw new ApiError(400, `Missing required field: ${requiredField} (string)`);
   }
+
+  // Determine max length based on field name
+  const maxLen = requiredField === "text" ? MAX_TEXT_INPUT_LENGTH : MAX_PROMPT_LENGTH;
 
   if (value.length > maxLen) {
     throw new ApiError(
       400,
-      `${field} exceeds maximum length of ${maxLen.toLocaleString()} characters`
+      `${requiredField} exceeds maximum length of ${maxLen.toLocaleString()} characters`
     );
   }
 
-  // Reject null bytes which can cause issues in some systems
+  // Reject null bytes
   if (value.includes("\0")) {
-    throw new ApiError(400, `${field} contains invalid characters`);
+    throw new ApiError(400, `${requiredField} contains invalid characters`);
+  }
+
+  // Content safety scan on all string fields in the body
+  for (const [key, val] of Object.entries(body)) {
+    if (typeof val === "string") {
+      scanInputSafety(val);
+    }
   }
 }
 

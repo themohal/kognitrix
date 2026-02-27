@@ -178,7 +178,7 @@ export default function ServicePlaygroundPage() {
                   ? "Paste your document text here..."
                   : slug === "data-extractor"
                   ? "Paste unstructured text to extract data from..."
-                  : "Enter text to translate..."
+: "Enter text to translate..."
               }
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
