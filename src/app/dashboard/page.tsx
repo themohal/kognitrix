@@ -7,22 +7,45 @@ import { useCredits } from "@/context/CreditsContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StatsCards } from "@/components/dashboard/StatsCards";
+import { UsageChart } from "@/components/dashboard/UsageChart";
 import {
   Zap, BarChart3, CreditCard, ArrowRight, Clock,
   TrendingUp, Activity,
 } from "lucide-react";
 
+interface UsageLog {
+  id: string;
+  service_id: string;
+  credits_used: number;
+  status: string;
+  channel: string;
+  created_at: string;
+}
+
 interface UsageSummary {
   total_requests: number;
   total_credits: number;
-  recent_logs: Array<{
-    id: string;
-    service_id: string;
-    credits_used: number;
-    status: string;
-    channel: string;
-    created_at: string;
-  }>;
+  recent_logs: UsageLog[];
+}
+
+interface ChartDataPoint {
+  date: string;
+  requests: number;
+  credits: number;
+}
+
+function groupLogsByDate(logs: UsageLog[]): ChartDataPoint[] {
+  const map: Record<string, { requests: number; credits: number }> = {};
+  for (const log of logs) {
+    const day = log.created_at.slice(0, 10); // "YYYY-MM-DD"
+    if (!map[day]) map[day] = { requests: 0, credits: 0 };
+    map[day].requests += 1;
+    map[day].credits += log.credits_used;
+  }
+  return Object.entries(map)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, v]) => ({ date, ...v }));
 }
 
 export default function DashboardPage() {
@@ -33,6 +56,7 @@ export default function DashboardPage() {
     total_credits: 0,
     recent_logs: [],
   });
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
 
   const fetchUsage = useCallback(async () => {
     if (!user?.id) return;
@@ -50,18 +74,30 @@ export default function DashboardPage() {
     }
   }, [user?.id]);
 
+  const fetchChartData = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const res = await fetch("/api/me/usage?limit=30&page=0&pageSize=200");
+      if (!res.ok) return;
+      const data = await res.json();
+      const logs: UsageLog[] = data.logs ?? [];
+      setChartData(groupLogsByDate(logs));
+    } catch {
+      // Keep existing chart data on error
+    }
+  }, [user?.id]);
+
   // Initial fetch + realtime updates from broadcast
   useEffect(() => {
     fetchUsage();
+    fetchChartData();
     const onUpdate = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (detail?.total_requests != null && detail?.total_credits_used != null) {
-        // Update totals instantly from broadcast payload
         setUsage((prev) => ({
           ...prev,
           total_requests: detail.total_requests,
           total_credits: detail.total_credits_used,
-          // Prepend new log entry and keep only 3
           recent_logs: [
             {
               id: detail.request_id,
@@ -74,14 +110,16 @@ export default function DashboardPage() {
             ...prev.recent_logs,
           ].slice(0, 3),
         }));
+        // Refresh chart data after a new request
+        fetchChartData();
       } else {
-        // Fallback: re-fetch from server
         fetchUsage();
+        fetchChartData();
       }
     };
     window.addEventListener("kognitrix:credits-updated", onUpdate);
     return () => window.removeEventListener("kognitrix:credits-updated", onUpdate);
-  }, [fetchUsage]);
+  }, [fetchUsage, fetchChartData]);
 
   const stats = [
     {
@@ -124,24 +162,20 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <Link key={stat.label} href={stat.href}>
-            <Card className="hover:border-primary/50 transition-colors cursor-pointer">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                  <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                </div>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">
-                  {stat.label}
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
+      <StatsCards stats={stats} />
+
+      {/* Request history chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-cyan-400" />
+            Request History (30 days)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <UsageChart data={chartData} />
+        </CardContent>
+      </Card>
 
       {/* Quick actions */}
       <div className="grid sm:grid-cols-3 gap-4">
