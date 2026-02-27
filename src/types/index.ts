@@ -241,4 +241,15 @@ export const SERVICES_CONFIG: Omit<Service, 'id' | 'created_at' | 'updated_at'>[
     icon: 'Languages',
     endpoint: '/api/v1/generate/translate',
   },
+  {
+    name: 'AI SEO Optimizer',
+    slug: 'seo-optimizer',
+    description: 'Full SEO audit tool: analyze URLs or content for keyword optimization, meta tag suggestions, content structure scoring, and actionable SEO recommendations. Powered by GPT-4o to evaluate content against current SEO best practices.',
+    short_description: 'SEO audit, keyword optimization, meta tags & recommendations',
+    category: 'seo',
+    credit_cost: 12,
+    is_active: true,
+    icon: 'Search',
+    endpoint: '/api/v1/generate/seo',
+  },
 ];

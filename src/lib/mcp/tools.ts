@@ -105,4 +105,18 @@ export const MCP_TOOLS: McpTool[] = [
       required: ["text", "target_language"],
     },
   },
+  {
+    name: "kognitrix_seo_analyze",
+    description: "Analyze content for SEO: keyword optimization, meta tag suggestions, content structure scoring, and actionable recommendations. Costs 12 credits.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        content: { type: "string", description: "Content or page text to analyze for SEO" },
+        url: { type: "string", description: "URL being analyzed (optional, for context)" },
+        target_keywords: { type: "string", description: "Comma-separated target keywords to optimize for" },
+        analysis_type: { type: "string", description: "Analysis scope", enum: ["full", "keywords", "meta_tags", "structure", "recommendations"] },
+      },
+      required: ["content"],
+    },
+  },
 ];
