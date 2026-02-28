@@ -19,8 +19,24 @@ interface DeductCreditsParams {
 // UUID regex
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// Cache service slug -> UUID mapping
+// Cache service slug -> UUID mapping (auto-refreshes on cache miss)
 let serviceCache: Record<string, string> | null = null;
+
+async function loadServiceCache(
+  supabase: ReturnType<typeof createServiceClient>
+): Promise<void> {
+  const { data, error } = await supabase.from("services").select("id, slug");
+  if (error) {
+    console.error("Failed to load services cache:", error.message);
+    return;
+  }
+  if (data && data.length > 0) {
+    serviceCache = {};
+    for (const s of data) serviceCache[s.slug] = s.id;
+  } else {
+    console.error("Services table is empty or inaccessible.");
+  }
+}
 
 async function resolveServiceUuid(
   supabase: ReturnType<typeof createServiceClient>,
@@ -31,18 +47,18 @@ async function resolveServiceUuid(
 
   // It's a slug — look up the UUID
   if (!serviceCache) {
-    const { data, error } = await supabase.from("services").select("id, slug");
-    if (error) {
-      console.error("Failed to load services cache:", error.message);
-    }
-    if (data && data.length > 0) {
-      serviceCache = {};
-      for (const s of data) serviceCache[s.slug] = s.id;
-    } else {
-      console.error("Services table is empty or inaccessible. Slugs available:", data);
-    }
+    await loadServiceCache(supabase);
   }
-  const resolved = serviceCache?.[serviceId] ?? null;
+
+  let resolved = serviceCache?.[serviceId] ?? null;
+
+  // Cache miss — refresh once in case a new service was added
+  if (!resolved) {
+    serviceCache = null;
+    await loadServiceCache(supabase);
+    resolved = serviceCache?.[serviceId] ?? null;
+  }
+
   if (!resolved) {
     console.error(`Could not resolve slug "${serviceId}". Cache:`, serviceCache);
   }

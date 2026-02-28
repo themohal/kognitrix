@@ -39,10 +39,7 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 .env*.local
-
-# supabase migrations
 /supabase/migrations/
-
 # vercel
 .vercel
 
@@ -64,3 +61,6 @@ Desktop.ini
 
 # plan
 PLAN.md
+
+# agent-team logs (ephemeral)
+/agent-team

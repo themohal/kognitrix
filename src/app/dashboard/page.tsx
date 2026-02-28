@@ -21,6 +21,7 @@ interface UsageLog {
   status: string;
   channel: string;
   created_at: string;
+  services?: { name: string; slug: string } | null;
 }
 
 interface UsageSummary {
@@ -248,7 +249,7 @@ export default function DashboardPage() {
                       {log.status}
                     </Badge>
                     <div>
-                      <div className="text-sm font-medium">{log.service_id}</div>
+                      <div className="text-sm font-medium">{log.services?.name ?? log.service_id.substring(0, 8) + "..."}</div>
                       <div className="text-xs text-muted-foreground">
                         via {log.channel} &bull;{" "}
                         {new Date(log.created_at).toLocaleString()}

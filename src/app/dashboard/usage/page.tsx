@@ -16,6 +16,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+
 interface UsageLog {
   id: string;
   service_id: string;
@@ -25,6 +26,12 @@ interface UsageLog {
   latency_ms: number;
   model_used: string;
   created_at: string;
+  services?: { name: string; slug: string } | null;
+}
+
+function getServiceName(log: UsageLog): string {
+  if (log.services?.name) return log.services.name;
+  return log.service_id.substring(0, 8) + "...";
 }
 
 interface ServiceStat {
@@ -63,13 +70,16 @@ function CustomBarTooltip({ active, payload, label }: CustomTooltipProps) {
 
 function computeTopServices(logs: UsageLog[]): ServiceStat[] {
   const map: Record<string, number> = {};
+  const nameMap: Record<string, string> = {};
   for (const log of logs) {
-    map[log.service_id] = (map[log.service_id] ?? 0) + log.credits_used;
+    const key = log.service_id;
+    map[key] = (map[key] ?? 0) + log.credits_used;
+    if (log.services?.name) nameMap[key] = log.services.name;
   }
   return Object.entries(map)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5)
-    .map(([service, credits]) => ({ service, credits }));
+    .map(([id, credits]) => ({ service: nameMap[id] ?? id.substring(0, 8), credits }));
 }
 
 const PAGE_SIZE = 20;
@@ -82,6 +92,7 @@ export default function UsagePage() {
   const [filterChannel, setFilterChannel] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [allLogs, setAllLogs] = useState<UsageLog[]>([]);
+  const [totalCreditsUsed, setTotalCreditsUsed] = useState(0);
 
   // Fetch paginated logs for the table
   useEffect(() => {
@@ -97,6 +108,7 @@ export default function UsagePage() {
         const data = await res.json();
         setLogs(data.logs ?? []);
         setTotal(data.total ?? 0);
+        setTotalCreditsUsed(data.total_credits_used ?? 0);
       } catch {
         // Keep existing state
       } finally {
@@ -166,9 +178,9 @@ export default function UsagePage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-muted-foreground">Credits Used (Page)</div>
+            <div className="text-sm text-muted-foreground">Total Credits Used</div>
             <div className="text-2xl font-bold">
-              {logs.reduce((sum, l) => sum + l.credits_used, 0)}
+              {totalCreditsUsed}
             </div>
           </CardContent>
         </Card>
@@ -219,7 +231,7 @@ export default function UsagePage() {
                 <tbody>
                   {logs.map((log) => (
                     <tr key={log.id} className="border-b border-border/50 hover:bg-secondary/30">
-                      <td className="py-3 px-2 font-medium">{log.service_id}</td>
+                      <td className="py-3 px-2 font-medium">{getServiceName(log)}</td>
                       <td className="py-3 px-2">
                         <Badge
                           variant={log.status === "success" ? "success" : "destructive"}

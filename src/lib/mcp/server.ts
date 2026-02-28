@@ -8,6 +8,7 @@ import { generateImage } from "@/lib/openai/services/image";
 import { analyzeDocument } from "@/lib/openai/services/document";
 import { extractData } from "@/lib/openai/services/extract";
 import { translateText } from "@/lib/openai/services/translate";
+import { generateSeoAnalysis } from "@/lib/openai/services/seo";
 import type { Profile } from "@/types";
 
 interface McpRequest {
@@ -132,6 +133,12 @@ async function handleToolCall(
     case "kognitrix_translate": {
       return await executeService(id, "translator", 3, user, ip, async () => {
         return await translateText(args as unknown as Parameters<typeof translateText>[0]);
+      });
+    }
+
+    case "kognitrix_seo_analyze": {
+      return await executeService(id, "seo-optimizer", 12, user, ip, async () => {
+        return await generateSeoAnalysis(args as unknown as Parameters<typeof generateSeoAnalysis>[0]);
       });
     }
 

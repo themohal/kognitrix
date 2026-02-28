@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       userId: user.id,
       serviceId: SERVICE_ID,
       creditsUsed: CREDIT_COST,
-      requestPayload: { content: body.content, url: body.url, target_keywords: body.target_keywords, analysis_type: body.analysis_type },
+      requestPayload: { content: body.content.substring(0, 500), url: body.url, target_keywords: body.target_keywords, analysis_type: body.analysis_type },
       responseTokens: tokens,
       modelUsed: "gpt-4o",
       latencyMs,

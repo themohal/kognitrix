@@ -1,0 +1,67 @@
+{
+  "team_name": "kognitrix-agents",
+  "project_path": "C:\\Users\\User\\Desktop\\projects\\project_5\\kognitrix-ai",
+  "github_repo": "themohal/kognitrix",
+  "main_branch": "main",
+  "schedule": {
+    "monthly_feature_cycle": {
+      "day": "1st Monday",
+      "time": "09:00",
+      "description": "Monthly cycle: research -> develop -> review -> PR"
+    },
+    "monthly_support_check": {
+      "day": "2nd Monday",
+      "time": "08:00",
+      "description": "Monthly support audit and documentation improvements"
+    },
+    "monthly_business_review": {
+      "day": "Last Friday",
+      "time": "17:00",
+      "description": "Monthly business metrics and strategy review"
+    },
+    "monthly_code_review": {
+      "day": "2nd Monday",
+      "time": "14:00",
+      "description": "Monthly code quality review of open PRs"
+    }
+  },
+  "agents": {
+    "market-researcher": {
+      "description": "Researches market trends and identifies new features",
+      "schedule": "monthly",
+      "run_day": "1st Monday",
+      "run_time": "09:00"
+    },
+    "feature-developer": {
+      "description": "Implements new features and creates PRs",
+      "schedule": "monthly",
+      "run_day": "1st Monday",
+      "run_time": "10:00"
+    },
+    "code-reviewer": {
+      "description": "Reviews PRs and ensures code quality",
+      "schedule": "monthly",
+      "run_day": "2nd Monday",
+      "run_time": "14:00"
+    },
+    "business-analyst": {
+      "description": "Analyzes business metrics and recommends optimizations",
+      "schedule": "monthly",
+      "run_day": "Last Friday",
+      "run_time": "17:00"
+    },
+    "support-agent": {
+      "description": "Monitors support quality and improves documentation",
+      "schedule": "monthly",
+      "run_day": "2nd Monday",
+      "run_time": "08:00"
+    }
+  },
+  "constraints": {
+    "max_features_per_week": 1,
+    "require_pr_review": true,
+    "never_push_to_main": true,
+    "build_must_pass": true,
+    "min_profit_margin": "60%"
+  }
+}
