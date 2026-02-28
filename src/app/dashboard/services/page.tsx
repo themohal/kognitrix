@@ -6,11 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SERVICES_CONFIG } from "@/types";
 import {
-  FileText, Code, FileSearch, ImageIcon, Database, Languages, ArrowRight,
+  FileText, Code, FileSearch, ImageIcon, Database, Languages, Search, ArrowRight,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {
-  FileText, Code, FileSearch, ImageIcon, Database, Languages,
+  FileText, Code, FileSearch, ImageIcon, Database, Languages, Search,
 };
 
 export default function ServicesPage() {

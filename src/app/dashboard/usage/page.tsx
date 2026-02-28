@@ -6,6 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
 
 interface UsageLog {
   id: string;
@@ -16,6 +26,60 @@ interface UsageLog {
   latency_ms: number;
   model_used: string;
   created_at: string;
+  services?: { name: string; slug: string } | null;
+}
+
+function getServiceName(log: UsageLog): string {
+  if (log.services?.name) return log.services.name;
+  return log.service_id.substring(0, 8) + "...";
+}
+
+interface ServiceStat {
+  service: string;
+  credits: number;
+}
+
+interface TooltipPayload {
+  value: number;
+  name: string;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[];
+  label?: string;
+}
+
+function CustomBarTooltip({ active, payload, label }: CustomTooltipProps) {
+  if (!active || !payload || payload.length === 0) return null;
+  return (
+    <div
+      style={{
+        background: "rgba(10, 17, 32, 0.95)",
+        border: "1px solid rgba(16, 185, 129, 0.3)",
+        borderRadius: "8px",
+        padding: "10px 14px",
+        fontSize: "13px",
+      }}
+    >
+      <p style={{ color: "#94a3b8", marginBottom: 4 }}>{label}</p>
+      <p style={{ color: "#a855f7" }}>Credits: {payload[0].value}</p>
+    </div>
+  );
+}
+
+function computeTopServices(logs: UsageLog[]): ServiceStat[] {
+  const map: Record<string, number> = {};
+  const nameMap: Record<string, string> = {};
+  for (const log of logs) {
+    const key = log.service_id;
+    map[key] = (map[key] ?? 0) + log.credits_used;
+    if (log.services?.name) nameMap[key] = log.services.name;
+  }
+  return Object.entries(map)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5)
+    .map(([id, credits]) => ({ service: nameMap[id] ?? id.substring(0, 8), credits }));
 }
 
 const PAGE_SIZE = 20;
@@ -27,7 +91,10 @@ export default function UsagePage() {
   const [page, setPage] = useState(0);
   const [filterChannel, setFilterChannel] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [allLogs, setAllLogs] = useState<UsageLog[]>([]);
+  const [totalCreditsUsed, setTotalCreditsUsed] = useState(0);
 
+  // Fetch paginated logs for the table
   useEffect(() => {
     if (!user?.id) return;
 
@@ -41,6 +108,7 @@ export default function UsagePage() {
         const data = await res.json();
         setLogs(data.logs ?? []);
         setTotal(data.total ?? 0);
+        setTotalCreditsUsed(data.total_credits_used ?? 0);
       } catch {
         // Keep existing state
       } finally {
@@ -51,6 +119,25 @@ export default function UsagePage() {
     fetchLogs();
   }, [user?.id, page, filterChannel]);
 
+  // Fetch a larger set for the bar chart (top services)
+  useEffect(() => {
+    if (!user?.id) return;
+
+    async function fetchAllLogs() {
+      try {
+        const res = await fetch("/api/me/usage?page=0&pageSize=200");
+        if (!res.ok) return;
+        const data = await res.json();
+        setAllLogs(data.logs ?? []);
+      } catch {
+        // Keep existing state
+      }
+    }
+
+    fetchAllLogs();
+  }, [user?.id]);
+
+  const topServices = computeTopServices(allLogs);
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
@@ -91,9 +178,9 @@ export default function UsagePage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-muted-foreground">Credits Used (Page)</div>
+            <div className="text-sm text-muted-foreground">Total Credits Used</div>
             <div className="text-2xl font-bold">
-              {logs.reduce((sum, l) => sum + l.credits_used, 0)}
+              {totalCreditsUsed}
             </div>
           </CardContent>
         </Card>
@@ -144,7 +231,7 @@ export default function UsagePage() {
                 <tbody>
                   {logs.map((log) => (
                     <tr key={log.id} className="border-b border-border/50 hover:bg-secondary/30">
-                      <td className="py-3 px-2 font-medium">{log.service_id}</td>
+                      <td className="py-3 px-2 font-medium">{getServiceName(log)}</td>
                       <td className="py-3 px-2">
                         <Badge
                           variant={log.status === "success" ? "success" : "destructive"}
@@ -194,6 +281,56 @@ export default function UsagePage() {
                 </Button>
               </div>
             </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Top services bar chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-purple-400" />
+            Top Services by Credits Used
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {topServices.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground text-sm">
+              No service data yet.
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart
+                data={topServices}
+                margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#a855f7" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#7c3aed" stopOpacity={0.6} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(30, 41, 59, 0.8)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="service"
+                  tick={{ fill: "#64748b", fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fill: "#64748b", fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={36}
+                />
+                <Tooltip content={<CustomBarTooltip />} cursor={{ fill: "rgba(168, 85, 247, 0.08)" }} />
+                <Bar dataKey="credits" fill="url(#barGrad)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           )}
         </CardContent>
       </Card>

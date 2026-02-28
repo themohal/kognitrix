@@ -19,8 +19,24 @@ interface DeductCreditsParams {
 // UUID regex
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// Cache service slug -> UUID mapping
+// Cache service slug -> UUID mapping (auto-refreshes on cache miss)
 let serviceCache: Record<string, string> | null = null;
+
+async function loadServiceCache(
+  supabase: ReturnType<typeof createServiceClient>
+): Promise<void> {
+  const { data, error } = await supabase.from("services").select("id, slug");
+  if (error) {
+    console.error("Failed to load services cache:", error.message);
+    return;
+  }
+  if (data && data.length > 0) {
+    serviceCache = {};
+    for (const s of data) serviceCache[s.slug] = s.id;
+  } else {
+    console.error("Services table is empty or inaccessible.");
+  }
+}
 
 async function resolveServiceUuid(
   supabase: ReturnType<typeof createServiceClient>,
@@ -31,18 +47,18 @@ async function resolveServiceUuid(
 
   // It's a slug — look up the UUID
   if (!serviceCache) {
-    const { data, error } = await supabase.from("services").select("id, slug");
-    if (error) {
-      console.error("Failed to load services cache:", error.message);
-    }
-    if (data && data.length > 0) {
-      serviceCache = {};
-      for (const s of data) serviceCache[s.slug] = s.id;
-    } else {
-      console.error("Services table is empty or inaccessible. Slugs available:", data);
-    }
+    await loadServiceCache(supabase);
   }
-  const resolved = serviceCache?.[serviceId] ?? null;
+
+  let resolved = serviceCache?.[serviceId] ?? null;
+
+  // Cache miss — refresh once in case a new service was added
+  if (!resolved) {
+    serviceCache = null;
+    await loadServiceCache(supabase);
+    resolved = serviceCache?.[serviceId] ?? null;
+  }
+
   if (!resolved) {
     console.error(`Could not resolve slug "${serviceId}". Cache:`, serviceCache);
   }
@@ -109,30 +125,37 @@ export async function deductCredits(params: DeductCreditsParams): Promise<{
   const totalCreditsUsed = allLogs?.reduce((sum, l) => sum + l.credits_used, 0) ?? 0;
 
   // Broadcast realtime update so the browser dashboard updates instantly
+  // Timeout after 3s so a Realtime failure never hangs the API response
   const broadcastChannel = supabase.channel(`user:${params.userId}`);
-  await new Promise<void>((resolve) => {
-    broadcastChannel.subscribe((status: string) => {
-      if (status === "SUBSCRIBED") {
-        broadcastChannel.send({
-          type: "broadcast",
-          event: "credits_updated",
-          payload: {
-            credits_balance: newBalance ?? 0,
-            credits_used: params.creditsUsed,
-            total_requests: totalRequests ?? 0,
-            total_credits_used: totalCreditsUsed,
-            channel: params.channel,
-            request_id: requestId,
-            service_id: serviceUuid || "",
-            created_at: new Date().toISOString(),
-          },
-        }).then(() => {
-          supabase.removeChannel(broadcastChannel);
-          resolve();
-        });
-      }
-    });
-  });
+  await Promise.race([
+    new Promise<void>((resolve) => {
+      broadcastChannel.subscribe((status: string) => {
+        if (status === "SUBSCRIBED") {
+          broadcastChannel.send({
+            type: "broadcast",
+            event: "credits_updated",
+            payload: {
+              credits_balance: newBalance ?? 0,
+              credits_used: params.creditsUsed,
+              total_requests: totalRequests ?? 0,
+              total_credits_used: totalCreditsUsed,
+              channel: params.channel,
+              request_id: requestId,
+              service_id: serviceUuid || "",
+              created_at: new Date().toISOString(),
+            },
+          }).then(() => {
+            supabase.removeChannel(broadcastChannel);
+            resolve();
+          });
+        }
+      });
+    }),
+    new Promise<void>((resolve) => setTimeout(() => {
+      supabase.removeChannel(broadcastChannel);
+      resolve();
+    }, 3000)),
+  ]);
 
   return {
     requestId,

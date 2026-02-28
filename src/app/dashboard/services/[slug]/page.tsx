@@ -74,6 +74,9 @@ export default function ServicePlaygroundPage() {
         case "translator":
           body = { text: prompt, target_language: extraField || "Spanish" };
           break;
+        case "seo-optimizer":
+          body = { content: prompt, analysis_type: extraField || "full" };
+          break;
       }
 
       const res = await fetch(service.endpoint, {
@@ -128,6 +131,8 @@ export default function ServicePlaygroundPage() {
         return { label: "Action", placeholder: "summarize, extract, analyze, qa" };
       case "translator":
         return { label: "Target Language", placeholder: "Spanish, French, German, etc." };
+      case "seo-optimizer":
+        return { label: "Analysis Type", placeholder: "full, quick, keywords, meta" };
       default:
         return null;
     }
@@ -161,7 +166,7 @@ export default function ServicePlaygroundPage() {
         <CardContent className="space-y-4">
           <div>
             <label className="text-sm font-medium mb-2 block">
-              {slug === "document-analyzer" || slug === "data-extractor" || slug === "translator"
+              {slug === "document-analyzer" || slug === "data-extractor" || slug === "translator" || slug === "seo-optimizer"
                 ? "Input Text"
                 : "Prompt"}
             </label>
@@ -178,7 +183,11 @@ export default function ServicePlaygroundPage() {
                   ? "Paste your document text here..."
                   : slug === "data-extractor"
                   ? "Paste unstructured text to extract data from..."
-                  : "Enter text to translate..."
+                  : slug === "translator"
+                  ? "Enter text to translate..."
+                  : slug === "seo-optimizer"
+                  ? "Paste your web page content for SEO analysis..."
+: "Enter your content..."
               }
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}

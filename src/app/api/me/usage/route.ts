@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     let query = service
       .from("usage_logs")
-      .select("id, service_id, credits_used, status, channel, latency_ms, model_used, created_at", {
+      .select("id, service_id, credits_used, status, channel, latency_ms, model_used, created_at, services(name, slug)", {
         count: "exact",
       })
       .eq("user_id", session.user.id)
