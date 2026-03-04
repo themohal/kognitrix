@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.themohal/kognitrix",
+  "title": "Kognitrix AI",
+  "description": "8 AI services via MCP: content, code, image, docs, data extraction, translation, SEO, email.",
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://kognitrix.com/api/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer token with your Kognitrix API key. Get one free at https://kognitrix.com/dashboard/api-keys",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

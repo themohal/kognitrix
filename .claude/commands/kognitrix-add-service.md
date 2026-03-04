@@ -149,7 +149,21 @@ curl -s -X POST "<SUPABASE_URL>/rest/v1/services" \
 ```
 If you get a duplicate key error (23505), the service already exists — that's fine.
 
-### 13. Verify Build
+### 13. Update OpenAPI Spec — `public/openapi.json`
+Add a new path entry for `/generate/<slug>` following the exact pattern of existing endpoints.
+Include operationId, summary with credit cost, description, requestBody schema, and response ref.
+
+### 14. Update Agent Discovery — `public/.well-known/agent.json`
+Add the new service to the `services` array with name, endpoint, credits, and description.
+
+### 15. Update MCP Registry Manifest — `server.json`
+Bump the `version` field (e.g., "1.0.0" → "1.1.0").
+After pushing code, republish to the MCP Registry:
+```bash
+mcp-publisher publish
+```
+
+### 16. Verify Build
 ```bash
 npm run build
 ```
@@ -168,9 +182,11 @@ These use Supabase joins and auto-refresh caches:
 1. Run `npm run build` — must pass with zero errors
 2. If on a feature branch, commit all files and push
 3. Update `agent-team/backlog/features.json` if applicable — set status to "in_progress" or "pr_created"
+4. Republish to MCP Registry: `mcp-publisher publish`
 
 ## QUALITY RULES
 - Use `validateInput(body, "<field>")` — NEVER do custom manual validation
 - Truncate large text fields to 500 chars in `requestPayload` before logging
 - Follow exact patterns from existing services — read first, write second
 - TypeScript strict — no `any` types
+- Do NOT include "Claude" or "Co-Authored-By" in commit messages
