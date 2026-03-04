@@ -1,0 +1,46 @@
+{
+  "name": "Kognitrix AI",
+  "description": "Intelligence-as-a-Service platform for humans and AI agents. 8 AI services available via REST API and MCP server with pay-per-use pricing. Accepts cryptocurrency payments.",
+  "url": "https://kognitrix.com",
+  "api": {
+    "base_url": "https://kognitrix.com/api/v1",
+    "openapi_spec": "https://kognitrix.com/openapi.json",
+    "authentication": {
+      "type": "bearer",
+      "instructions": "Sign up at https://kognitrix.com/signup, then get your API key from https://kognitrix.com/dashboard/api-keys"
+    }
+  },
+  "mcp": {
+    "endpoint": "https://kognitrix.com/api/mcp",
+    "protocol_version": "2024-11-05",
+    "authentication": {
+      "type": "bearer",
+      "instructions": "Use your Kognitrix API key as Bearer token"
+    }
+  },
+  "services": [
+    { "name": "Content Generation", "endpoint": "/generate/content", "credits": 5, "description": "Blog posts, articles, social media, marketing copy" },
+    { "name": "Code Assistant", "endpoint": "/generate/code", "credits": 8, "description": "Code generation, debugging, refactoring, review" },
+    { "name": "Document Analyzer", "endpoint": "/generate/document", "credits": 6, "description": "Summarize, extract, analyze documents" },
+    { "name": "Image Generator", "endpoint": "/generate/image", "credits": 10, "description": "DALL-E powered image creation" },
+    { "name": "Data Extractor", "endpoint": "/generate/extract", "credits": 4, "description": "Structured data from unstructured text" },
+    { "name": "Translator", "endpoint": "/generate/translate", "credits": 3, "description": "Multi-language translation" },
+    { "name": "SEO Optimizer", "endpoint": "/generate/seo", "credits": 7, "description": "SEO audit, keywords, meta tags" },
+    { "name": "Email Writer", "endpoint": "/generate/email", "credits": 5, "description": "Sales emails, outreach, campaigns" }
+  ],
+  "pricing": {
+    "model": "pay_per_use",
+    "currency": "USD",
+    "credit_packs": [
+      { "name": "Starter Pack", "credits": 100, "price": 8 },
+      { "name": "Growth Pack", "credits": 500, "price": 35 },
+      { "name": "Pro Pack", "credits": 1000, "price": 60 },
+      { "name": "Mega Pack", "credits": 2000, "price": 100 }
+    ],
+    "payment_methods": ["card", "cryptocurrency"],
+    "crypto_currencies": ["BTC", "ETH", "USDT", "USDC", "SOL", "LTC", "DOGE", "BNB"]
+  },
+  "documentation": "https://kognitrix.com/docs",
+  "signup": "https://kognitrix.com/signup",
+  "contact": "support@kognitrix.com"
+}

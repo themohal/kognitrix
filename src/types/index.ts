@@ -2,7 +2,8 @@ export type PlanType = 'free_trial' | 'starter' | 'pro' | 'pay_as_you_go';
 export type ServiceCategory = 'content' | 'code' | 'data' | 'image' | 'legal' | 'seo' | 'workflow';
 export type UsageStatus = 'success' | 'error' | 'rate_limited';
 export type TransactionType = 'credit_purchase' | 'subscription' | 'refund';
-export type TransactionStatus = 'pending' | 'completed' | 'refunded';
+export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'expired' | 'refunded';
+export type PaymentProvider = 'lemon_squeezy' | 'nowpayments';
 export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due' | 'paused';
 export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
 export type TicketPriority = 'low' | 'medium' | 'high' | 'critical';
@@ -18,8 +19,19 @@ export interface Profile {
   api_key: string;
   api_key_created_at: string;
   is_agent: boolean;
+  is_admin: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
 }
 
 export interface Service {
@@ -60,6 +72,8 @@ export interface Transaction {
   amount_usd: number;
   credits_added: number;
   lemon_squeezy_order_id: string | null;
+  nowpayments_payment_id: string | null;
+  payment_provider: PaymentProvider;
   status: TransactionStatus;
   created_at: string;
   metadata: Record<string, unknown>;
@@ -240,5 +254,27 @@ export const SERVICES_CONFIG: Omit<Service, 'id' | 'created_at' | 'updated_at'>[
     is_active: true,
     icon: 'Languages',
     endpoint: '/api/v1/generate/translate',
+  },
+  {
+    name: 'AI SEO Optimizer',
+    slug: 'seo-optimizer',
+    description: 'Analyze your content for SEO optimization. Get keyword suggestions, meta tag recommendations, readability scores, and actionable improvement tips to rank higher.',
+    short_description: 'SEO audit, keywords, meta tags, content optimization',
+    category: 'seo',
+    credit_cost: 7,
+    is_active: true,
+    icon: 'Search',
+    endpoint: '/api/v1/generate/seo',
+  },
+  {
+    name: 'AI Email Writer',
+    slug: 'email-writer',
+    description: 'Generate professional emails for sales outreach, cold emails, follow-ups, marketing campaigns, and more. Includes subject lines, body content, and call-to-action optimization.',
+    short_description: 'Sales emails, cold outreach, follow-ups, campaigns',
+    category: 'content',
+    credit_cost: 5,
+    is_active: true,
+    icon: 'Mail',
+    endpoint: '/api/v1/generate/email',
   },
 ];

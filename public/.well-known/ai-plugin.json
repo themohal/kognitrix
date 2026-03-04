@@ -1,0 +1,19 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Kognitrix AI",
+  "name_for_model": "kognitrix_ai",
+  "description_for_human": "AI-powered services: content generation, code assistance, image creation, document analysis, data extraction, SEO optimization, translation, and email writing. Pay-per-use with crypto payments accepted.",
+  "description_for_model": "Kognitrix AI provides 8 AI services via REST API. Services: content generation (5 credits), code assistance (8 credits), document analysis (6 credits), image generation (10 credits), data extraction (4 credits), translation (3 credits), SEO optimization (7 credits), email writing (5 credits). Authenticate with API key via Bearer token. Credit packs available from $8 (100 credits) to $100 (2000 credits). Supports card and cryptocurrency payments. MCP server available at /api/mcp.",
+  "auth": {
+    "type": "service_http",
+    "authorization_type": "bearer",
+    "verification_tokens": {}
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://kognitrix.com/openapi.json"
+  },
+  "logo_url": "https://kognitrix.com/logo.png",
+  "contact_email": "support@kognitrix.com",
+  "legal_info_url": "https://kognitrix.com/terms"
+}

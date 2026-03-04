@@ -101,7 +101,7 @@ export default function McpSetupPage() {
             </div>
             <Button variant="ghost" size="sm" onClick={copyEndpoint}>
               {copiedEndpoint ? (
-                <Check className="w-4 h-4 text-emerald-500" />
+                <Check className="w-4 h-4 text-indigo-500" />
               ) : (
                 <Copy className="w-4 h-4" />
               )}
@@ -134,7 +134,7 @@ export default function McpSetupPage() {
               onClick={copyConfig}
             >
               {copiedConfig ? (
-                <Check className="w-4 h-4 text-emerald-500" />
+                <Check className="w-4 h-4 text-indigo-500" />
               ) : (
                 <Copy className="w-4 h-4" />
               )}

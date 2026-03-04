@@ -105,4 +105,30 @@ export const MCP_TOOLS: McpTool[] = [
       required: ["text", "target_language"],
     },
   },
+  {
+    name: "kognitrix_optimize_seo",
+    description: "Analyze content for SEO optimization. Get keyword suggestions, meta tags, readability score, and improvement tips. Costs 7 credits.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        content: { type: "string", description: "The content to analyze for SEO" },
+        target_keyword: { type: "string", description: "Optional target keyword to optimize for" },
+        url: { type: "string", description: "Optional page URL for context" },
+      },
+      required: ["content"],
+    },
+  },
+  {
+    name: "kognitrix_generate_email",
+    description: "Generate professional emails for sales outreach, cold emails, follow-ups, and marketing campaigns. Costs 5 credits.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        prompt: { type: "string", description: "What the email should be about or accomplish" },
+        type: { type: "string", description: "Email type", enum: ["cold_outreach", "follow_up", "sales", "marketing", "newsletter", "professional"] },
+        tone: { type: "string", description: "Writing tone (e.g. professional, friendly, urgent)" },
+      },
+      required: ["prompt"],
+    },
+  },
 ];

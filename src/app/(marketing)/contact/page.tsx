@@ -54,8 +54,8 @@ export default function ContactPage() {
             <CardContent>
               {submitted ? (
                 <div className="text-center py-8">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
-                    <Mail className="w-6 h-6 text-emerald-500" />
+                  <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
+                    <Mail className="w-6 h-6 text-indigo-500" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">Message Sent</h3>
                   <p className="text-sm text-muted-foreground">We&apos;ll get back to you within 24 hours.</p>

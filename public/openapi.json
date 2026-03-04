@@ -1,0 +1,444 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Kognitrix AI API",
+    "description": "AI-powered services platform for humans and AI agents. Content generation, code assistance, image creation, document analysis, data extraction, translation, SEO optimization, and email writing. Pay-per-use with credit system. Supports card and cryptocurrency payments.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Kognitrix AI",
+      "url": "https://kognitrix.com",
+      "email": "support@kognitrix.com"
+    },
+    "termsOfService": "https://kognitrix.com/terms"
+  },
+  "servers": [
+    {
+      "url": "https://kognitrix.com/api/v1",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/services": {
+      "get": {
+        "operationId": "listServices",
+        "summary": "List all available AI services",
+        "description": "Returns all active services with their credit costs and endpoints. No authentication required.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "List of services",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "services": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Service" }
+                        },
+                        "total": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/credits": {
+      "get": {
+        "operationId": "getCredits",
+        "summary": "Check credit balance",
+        "description": "Returns the authenticated user's current credit balance.",
+        "responses": {
+          "200": {
+            "description": "Credit balance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "credits_balance": { "type": "number" },
+                        "plan_type": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usage": {
+      "get": {
+        "operationId": "getUsage",
+        "summary": "View usage history",
+        "description": "Returns recent API usage logs for the authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Usage history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate/content": {
+      "post": {
+        "operationId": "generateContent",
+        "summary": "Generate content (5 credits)",
+        "description": "Generate blog posts, articles, social media content, marketing copy using GPT-4o.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "description": "The content prompt or topic"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["blog_post", "article", "social_media", "marketing_copy", "general"],
+                    "description": "Type of content to generate"
+                  },
+                  "tone": {
+                    "type": "string",
+                    "enum": ["professional", "casual", "formal", "friendly", "persuasive"],
+                    "description": "Desired tone of the content"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/GenerateResponse" }
+        }
+      }
+    },
+    "/generate/code": {
+      "post": {
+        "operationId": "generateCode",
+        "summary": "Code assistance (8 credits)",
+        "description": "Generate code, debug issues, refactor, or review code in any programming language.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "description": "Code prompt, question, or code to review"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Programming language (e.g. python, javascript, rust)"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": ["generate", "debug", "refactor", "review", "explain"],
+                    "description": "Type of code assistance"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/GenerateResponse" }
+        }
+      }
+    },
+    "/generate/document": {
+      "post": {
+        "operationId": "analyzeDocument",
+        "summary": "Analyze documents (6 credits)",
+        "description": "Summarize documents, extract key information, analyze contracts and text.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 50000,
+                    "description": "Document text or analysis request"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": ["summarize", "extract", "analyze", "review"],
+                    "description": "Type of document analysis"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/GenerateResponse" }
+        }
+      }
+    },
+    "/generate/image": {
+      "post": {
+        "operationId": "generateImage",
+        "summary": "Generate images (10 credits)",
+        "description": "Create images using DALL-E 3 for marketing, design, and social media.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 4000,
+                    "description": "Image description prompt"
+                  },
+                  "size": {
+                    "type": "string",
+                    "enum": ["1024x1024", "1792x1024", "1024x1792"],
+                    "description": "Image dimensions"
+                  },
+                  "quality": {
+                    "type": "string",
+                    "enum": ["standard", "hd"],
+                    "description": "Image quality"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/GenerateResponse" }
+        }
+      }
+    },
+    "/generate/extract": {
+      "post": {
+        "operationId": "extractData",
+        "summary": "Extract structured data (4 credits)",
+        "description": "Transform unstructured text into clean, structured JSON data.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "description": "Unstructured text to extract data from"
+                  },
+                  "schema": {
+                    "type": "object",
+                    "description": "Optional JSON schema for the desired output structure"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/GenerateResponse" }
+        }
+      }
+    },
+    "/generate/translate": {
+      "post": {
+        "operationId": "translateText",
+        "summary": "Translate text (3 credits)",
+        "description": "Translate text between 50+ languages with context awareness.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt", "target_language"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "description": "Text to translate"
+                  },
+                  "target_language": {
+                    "type": "string",
+                    "description": "Target language (e.g. Spanish, French, Japanese)"
+                  },
+                  "source_language": {
+                    "type": "string",
+                    "description": "Source language (auto-detected if omitted)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/GenerateResponse" }
+        }
+      }
+    },
+    "/generate/seo": {
+      "post": {
+        "operationId": "optimizeSEO",
+        "summary": "SEO optimization (7 credits)",
+        "description": "Analyze content for SEO. Get keyword suggestions, meta tags, readability scores.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "description": "Content or URL to analyze for SEO"
+                  },
+                  "target_keyword": {
+                    "type": "string",
+                    "description": "Primary keyword to optimize for"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/GenerateResponse" }
+        }
+      }
+    },
+    "/generate/email": {
+      "post": {
+        "operationId": "writeEmail",
+        "summary": "Write emails (5 credits)",
+        "description": "Generate professional emails for sales, outreach, follow-ups, and campaigns.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 10000,
+                    "description": "Email brief or context"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["cold_email", "follow_up", "sales", "marketing", "general"],
+                    "description": "Type of email"
+                  },
+                  "tone": {
+                    "type": "string",
+                    "enum": ["professional", "casual", "formal", "friendly"],
+                    "description": "Email tone"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/GenerateResponse" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API key from https://kognitrix.com/dashboard/api-keys"
+      }
+    },
+    "schemas": {
+      "Service": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "description": { "type": "string" },
+          "short_description": { "type": "string" },
+          "category": { "type": "string" },
+          "credit_cost": { "type": "integer" },
+          "endpoint": { "type": "string" }
+        }
+      }
+    },
+    "responses": {
+      "GenerateResponse": {
+        "description": "Successful generation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": { "type": "boolean" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "result": { "type": "string", "description": "Generated content" }
+                  }
+                },
+                "credits_used": { "type": "integer" },
+                "credits_remaining": { "type": "integer" },
+                "request_id": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

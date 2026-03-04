@@ -39,7 +39,6 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 .env*.local
-
 # supabase migrations
 /supabase/migrations/
 
@@ -64,3 +63,6 @@ Desktop.ini
 
 # plan
 PLAN.md
+CLAUDE.md
+/commands
+/agent-team

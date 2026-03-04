@@ -64,7 +64,7 @@ export default function ServicesPage() {
       <main className="pt-24 pb-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <Badge variant="secondary" className="mb-4">6 AI Services</Badge>
+            <Badge variant="secondary" className="mb-4">8 AI Services</Badge>
             <h1 className="text-4xl font-bold mb-4">
               Powerful AI Services, <span className="gradient-text">Three Ways to Access</span>
             </h1>

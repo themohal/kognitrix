@@ -19,7 +19,7 @@ const plans = [
     period: "one-time",
     credits: "20 credits",
     description: "Try all services risk-free",
-    features: ["All 6 AI services", "Web + API + MCP access", "5 req/min rate limit", "50 requests/day"],
+    features: ["All 8 AI services", "Web + API + MCP access", "5 req/min rate limit", "50 requests/day"],
     cta: "Get Started Free",
     popular: false,
   },
@@ -29,7 +29,7 @@ const plans = [
     period: "/month",
     credits: "500 credits/mo",
     description: "For individuals and small teams",
-    features: ["All 6 AI services", "Web + API + MCP access", "30 req/min rate limit", "1,000 requests/day", "Email support"],
+    features: ["All 8 AI services", "Web + API + MCP access", "30 req/min rate limit", "1,000 requests/day", "Email support"],
     cta: "Subscribe",
     popular: false,
   },
@@ -39,7 +39,7 @@ const plans = [
     period: "/month",
     credits: "1,500 credits/mo",
     description: "For growing businesses",
-    features: ["All 6 AI services", "Web + API + MCP access", "60 req/min rate limit", "5,000 requests/day", "Priority support", "Usage analytics"],
+    features: ["All 8 AI services", "Web + API + MCP access", "60 req/min rate limit", "5,000 requests/day", "Priority support", "Usage analytics"],
     cta: "Subscribe",
     popular: true,
   },
@@ -91,7 +91,7 @@ export default function PricingPage() {
                   <ul className="space-y-2 mb-6">
                     {plan.features.map((f) => (
                       <li key={f} className="text-sm text-muted-foreground flex items-center gap-2">
-                        <Check className="w-4 h-4 text-emerald-500 shrink-0" />
+                        <Check className="w-4 h-4 text-indigo-500 shrink-0" />
                         {f}
                       </li>
                     ))}

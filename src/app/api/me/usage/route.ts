@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     let query = service
       .from("usage_logs")
-      .select("id, service_id, credits_used, status, channel, latency_ms, model_used, created_at", {
+      .select("id, service_id, credits_used, status, channel, latency_ms, model_used, created_at, services(name, slug)", {
         count: "exact",
       })
       .eq("user_id", session.user.id)
@@ -32,6 +32,17 @@ export async function GET(request: NextRequest) {
 
     const { data, count } = await query;
 
+    // Flatten the joined service name into each log
+    const logs = (data ?? []).map((log) => {
+      const { services, ...rest } = log as Record<string, unknown>;
+      const svc = services as { name: string; slug: string } | null;
+      return {
+        ...rest,
+        service_name: svc?.name ?? rest.service_id,
+        service_slug: svc?.slug ?? null,
+      };
+    });
+
     // Sum ALL credits used (not just current page)
     const { data: sumData } = await service
       .from("usage_logs")
@@ -41,7 +52,7 @@ export async function GET(request: NextRequest) {
     const totalCreditsUsed = sumData?.reduce((sum, l) => sum + l.credits_used, 0) ?? 0;
 
     return NextResponse.json({
-      logs: data ?? [],
+      logs,
       total: count ?? 0,
       total_credits_used: totalCreditsUsed,
     });

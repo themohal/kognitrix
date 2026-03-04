@@ -9,6 +9,7 @@ import { BarChart3, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -19,6 +20,7 @@ import {
 interface UsageLog {
   id: string;
   service_id: string;
+  service_name: string;
   credits_used: number;
   status: string;
   channel: string;
@@ -37,6 +39,23 @@ interface TooltipPayload {
   name: string;
 }
 
+const SERVICE_COLORS: Record<string, string> = {
+  "AI Content Generator": "#a855f7",  // purple
+  "AI Code Assistant":    "#3b82f6",  // blue
+  "AI Document Analyzer": "#10b981",  // emerald
+  "AI Image Generator":   "#f59e0b",  // amber
+  "AI Data Extractor":    "#06b6d4",  // cyan
+  "AI Translator":        "#ec4899",  // pink
+  "AI SEO Optimizer":     "#f97316",  // orange
+  "AI Email Writer":      "#8b5cf6",  // violet
+};
+
+const FALLBACK_COLORS = ["#6366f1", "#14b8a6", "#e11d48", "#84cc16", "#0ea5e9"];
+
+function getServiceColor(service: string, index: number): string {
+  return SERVICE_COLORS[service] ?? FALLBACK_COLORS[index % FALLBACK_COLORS.length];
+}
+
 interface CustomTooltipProps {
   active?: boolean;
   payload?: TooltipPayload[];
@@ -45,18 +64,19 @@ interface CustomTooltipProps {
 
 function CustomBarTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
+  const color = label ? getServiceColor(label, 0) : "#a855f7";
   return (
     <div
       style={{
         background: "rgba(10, 17, 32, 0.95)",
-        border: "1px solid rgba(16, 185, 129, 0.3)",
+        border: `1px solid ${color}40`,
         borderRadius: "8px",
         padding: "10px 14px",
         fontSize: "13px",
       }}
     >
       <p style={{ color: "#94a3b8", marginBottom: 4 }}>{label}</p>
-      <p style={{ color: "#a855f7" }}>Credits: {payload[0].value}</p>
+      <p style={{ color }}>Credits: {payload[0].value}</p>
     </div>
   );
 }
@@ -64,7 +84,8 @@ function CustomBarTooltip({ active, payload, label }: CustomTooltipProps) {
 function computeTopServices(logs: UsageLog[]): ServiceStat[] {
   const map: Record<string, number> = {};
   for (const log of logs) {
-    map[log.service_id] = (map[log.service_id] ?? 0) + log.credits_used;
+    const key = log.service_name || log.service_id;
+    map[key] = (map[key] ?? 0) + log.credits_used;
   }
   return Object.entries(map)
     .sort(([, a], [, b]) => b - a)
@@ -219,7 +240,7 @@ export default function UsagePage() {
                 <tbody>
                   {logs.map((log) => (
                     <tr key={log.id} className="border-b border-border/50 hover:bg-secondary/30">
-                      <td className="py-3 px-2 font-medium">{log.service_id}</td>
+                      <td className="py-3 px-2 font-medium">{log.service_name}</td>
                       <td className="py-3 px-2">
                         <Badge
                           variant={log.status === "success" ? "success" : "destructive"}
@@ -292,12 +313,6 @@ export default function UsagePage() {
                 data={topServices}
                 margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
               >
-                <defs>
-                  <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#a855f7" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#7c3aed" stopOpacity={0.6} />
-                  </linearGradient>
-                </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="rgba(30, 41, 59, 0.8)"
@@ -315,8 +330,16 @@ export default function UsagePage() {
                   tickLine={false}
                   width={36}
                 />
-                <Tooltip content={<CustomBarTooltip />} cursor={{ fill: "rgba(168, 85, 247, 0.08)" }} />
-                <Bar dataKey="credits" fill="url(#barGrad)" radius={[4, 4, 0, 0]} />
+                <Tooltip content={<CustomBarTooltip />} cursor={{ fill: "rgba(100, 116, 139, 0.08)" }} />
+                <Bar dataKey="credits" radius={[4, 4, 0, 0]}>
+                  {topServices.map((entry, index) => (
+                    <Cell
+                      key={entry.service}
+                      fill={getServiceColor(entry.service, index)}
+                      fillOpacity={0.85}
+                    />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           )}

@@ -5,10 +5,12 @@ import { useUser } from "@/hooks/useUser";
 import { useCredits } from "@/context/CreditsContext";
 import { createClient } from "@/lib/supabase/client";
 import { CREDIT_PACKS, PLANS } from "@/types";
+import type { CreditPack } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, CreditCard, Zap, ExternalLink } from "lucide-react";
+import { Check, CreditCard, Zap, ExternalLink, Bitcoin } from "lucide-react";
+import CryptoPaymentModal from "@/components/dashboard/CryptoPaymentModal";
 
 interface Transaction {
   id: string;
@@ -16,6 +18,7 @@ interface Transaction {
   amount_usd: number;
   credits_added: number;
   status: string;
+  payment_provider: string | null;
   created_at: string;
 }
 
@@ -35,7 +38,7 @@ export default function BillingPage() {
       const supabase = createClient();
       const { data } = await supabase
         .from("transactions")
-        .select("id, type, amount_usd, credits_added, status, created_at")
+        .select("id, type, amount_usd, credits_added, status, payment_provider, created_at")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false })
         .limit(20);
@@ -46,6 +49,7 @@ export default function BillingPage() {
   }, [user?.id]);
 
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [cryptoPack, setCryptoPack] = useState<CreditPack | null>(null);
 
   const openCheckout = async (planKey: string) => {
     setCheckoutLoading(planKey);
@@ -116,14 +120,27 @@ export default function BillingPage() {
                 <div className="text-xs text-muted-foreground mb-4">
                   ${(pack.price_usd / pack.credits * 100).toFixed(1)}¢ per credit
                 </div>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => handleBuyPack(pack.id)}
-                  disabled={checkoutLoading === pack.id}
-                >
-                  {checkoutLoading === pack.id ? "Loading..." : "Buy Now"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 min-w-0 text-xs px-2"
+                    onClick={() => handleBuyPack(pack.id)}
+                    disabled={checkoutLoading === pack.id}
+                  >
+                    <CreditCard className="w-3 h-3 shrink-0" />
+                    <span className="truncate">{checkoutLoading === pack.id ? "..." : "Card"}</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 min-w-0 text-xs px-2"
+                    onClick={() => setCryptoPack(pack)}
+                  >
+                    <Bitcoin className="w-3 h-3 shrink-0" />
+                    <span className="truncate">Crypto</span>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -182,16 +199,16 @@ export default function BillingPage() {
                     </p>
                     <ul className="space-y-2 mb-4">
                       <li className="text-sm text-muted-foreground flex items-center gap-2">
-                        <Check className="w-3 h-3 text-emerald-500" />
+                        <Check className="w-3 h-3 text-indigo-500" />
                         {plan.requests_per_min} req/min
                       </li>
                       <li className="text-sm text-muted-foreground flex items-center gap-2">
-                        <Check className="w-3 h-3 text-emerald-500" />
+                        <Check className="w-3 h-3 text-indigo-500" />
                         {plan.requests_per_day} req/day
                       </li>
                       <li className="text-sm text-muted-foreground flex items-center gap-2">
-                        <Check className="w-3 h-3 text-emerald-500" />
-                        All 6 services
+                        <Check className="w-3 h-3 text-indigo-500" />
+                        All 8 services
                       </li>
                     </ul>
                     <Button
@@ -228,6 +245,7 @@ export default function BillingPage() {
                 <thead>
                   <tr className="border-b border-border">
                     <th className="text-left py-3 px-2 font-medium text-muted-foreground">Type</th>
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Payment</th>
                     <th className="text-left py-3 px-2 font-medium text-muted-foreground">Amount</th>
                     <th className="text-left py-3 px-2 font-medium text-muted-foreground">Credits</th>
                     <th className="text-left py-3 px-2 font-medium text-muted-foreground">Status</th>
@@ -242,11 +260,20 @@ export default function BillingPage() {
                           {tx.type.replace("_", " ")}
                         </Badge>
                       </td>
+                      <td className="py-3 px-2">
+                        <Badge variant="outline" className="text-xs">
+                          {tx.payment_provider === "nowpayments" ? "Crypto" : "Card"}
+                        </Badge>
+                      </td>
                       <td className="py-3 px-2 font-medium">${tx.amount_usd.toFixed(2)}</td>
-                      <td className="py-3 px-2 text-emerald-500">+{tx.credits_added}</td>
+                      <td className="py-3 px-2 text-indigo-500">+{tx.credits_added}</td>
                       <td className="py-3 px-2">
                         <Badge
-                          variant={tx.status === "completed" ? "success" : tx.status === "refunded" ? "destructive" : "secondary"}
+                          variant={
+                            tx.status === "completed" ? "success"
+                            : tx.status === "refunded" || tx.status === "failed" || tx.status === "expired" ? "destructive"
+                            : "secondary"
+                          }
                           className="text-xs"
                         >
                           {tx.status}
@@ -263,6 +290,15 @@ export default function BillingPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Crypto Payment Modal */}
+      {cryptoPack && (
+        <CryptoPaymentModal
+          pack={cryptoPack}
+          onClose={() => setCryptoPack(null)}
+          onSuccess={() => fetchBalance()}
+        />
+      )}
     </div>
   );
 }

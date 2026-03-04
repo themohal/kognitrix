@@ -94,7 +94,7 @@ export default function ApiKeysPage() {
             </Button>
             <Button variant="ghost" size="sm" onClick={handleCopy}>
               {copied ? (
-                <Check className="w-4 h-4 text-emerald-500" />
+                <Check className="w-4 h-4 text-indigo-500" />
               ) : (
                 <Copy className="w-4 h-4" />
               )}

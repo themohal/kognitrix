@@ -97,8 +97,35 @@ export default function RootLayout({
                 priceCurrency: "USD",
                 lowPrice: "0.03",
                 highPrice: "199",
-                offerCount: "6",
+                offerCount: "8",
               },
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebAPI",
+              name: "Kognitrix AI API",
+              description:
+                "REST API and MCP server providing 8 AI services: content generation, code assistance, image creation, document analysis, data extraction, translation, SEO optimization, and email writing. Pay-per-use with cryptocurrency payments accepted.",
+              url: "https://kognitrix.com/api/v1",
+              documentation: "https://kognitrix.com/docs",
+              termsOfService: "https://kognitrix.com/terms",
+              provider: {
+                "@type": "Organization",
+                name: "Kognitrix AI",
+                url: "https://kognitrix.com",
+              },
+              offers: [
+                { "@type": "Offer", name: "Starter Pack", price: "8", priceCurrency: "USD", description: "100 API credits" },
+                { "@type": "Offer", name: "Growth Pack", price: "35", priceCurrency: "USD", description: "500 API credits" },
+                { "@type": "Offer", name: "Pro Pack", price: "60", priceCurrency: "USD", description: "1000 API credits" },
+                { "@type": "Offer", name: "Mega Pack", price: "100", priceCurrency: "USD", description: "2000 API credits" },
+              ],
+              paymentAccepted: ["Credit Card", "Cryptocurrency"],
             }),
           }}
         />

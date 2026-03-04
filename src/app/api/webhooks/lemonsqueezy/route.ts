@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "Missing x-signature header" }, { status: 401 });
     }
 
-    if (!verifyWebhookSignature(rawBody, signature)) {
+    if (!(await verifyWebhookSignature(rawBody, signature))) {
       return Response.json({ error: "Invalid signature" }, { status: 401 });
     }
 
@@ -47,6 +47,7 @@ export async function POST(request: Request) {
             amount_usd: total / 100,
             credits_added: pack.credits,
             lemon_squeezy_order_id: event.data.id,
+            payment_provider: "lemon_squeezy",
             status: "completed",
             metadata: { pack_id: pack.id, variant_id: variantId },
           });
@@ -90,6 +91,7 @@ export async function POST(request: Request) {
             amount_usd: plan.price_usd,
             credits_added: plan.credits_per_month,
             lemon_squeezy_order_id: event.data.id,
+            payment_provider: "lemon_squeezy",
             status: "completed",
             metadata: { plan_type: planType },
           });
@@ -136,6 +138,7 @@ export async function POST(request: Request) {
               amount_usd: plan.price_usd,
               credits_added: plan.credits_per_month,
               lemon_squeezy_order_id: event.data.id,
+              payment_provider: "lemon_squeezy",
               status: "completed",
               metadata: { plan_type: sub.data.plan_type, renewal: true },
             });

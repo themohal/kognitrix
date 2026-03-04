@@ -74,6 +74,12 @@ export default function ServicePlaygroundPage() {
         case "translator":
           body = { text: prompt, target_language: extraField || "Spanish" };
           break;
+        case "seo-optimizer":
+          body = { content: prompt, target_keyword: extraField || undefined };
+          break;
+        case "email-writer":
+          body = { prompt, type: extraField || "professional" };
+          break;
       }
 
       const res = await fetch(service.endpoint, {
@@ -128,6 +134,10 @@ export default function ServicePlaygroundPage() {
         return { label: "Action", placeholder: "summarize, extract, analyze, qa" };
       case "translator":
         return { label: "Target Language", placeholder: "Spanish, French, German, etc." };
+      case "seo-optimizer":
+        return { label: "Target Keyword", placeholder: "e.g. AI API services, best SaaS tools" };
+      case "email-writer":
+        return { label: "Email Type", placeholder: "cold_outreach, follow_up, sales, marketing, newsletter, professional" };
       default:
         return null;
     }
@@ -161,7 +171,7 @@ export default function ServicePlaygroundPage() {
         <CardContent className="space-y-4">
           <div>
             <label className="text-sm font-medium mb-2 block">
-              {slug === "document-analyzer" || slug === "data-extractor" || slug === "translator"
+              {slug === "document-analyzer" || slug === "data-extractor" || slug === "translator" || slug === "seo-optimizer"
                 ? "Input Text"
                 : "Prompt"}
             </label>
@@ -178,6 +188,10 @@ export default function ServicePlaygroundPage() {
                   ? "Paste your document text here..."
                   : slug === "data-extractor"
                   ? "Paste unstructured text to extract data from..."
+                  : slug === "seo-optimizer"
+                  ? "Paste your article or page content to analyze for SEO..."
+                  : slug === "email-writer"
+                  ? "Write a cold outreach email to a SaaS founder about our AI API..."
 : "Enter text to translate..."
               }
               value={prompt}
@@ -227,7 +241,7 @@ export default function ServicePlaygroundPage() {
                 <span className="text-sm font-medium">Result</span>
                 <Button variant="ghost" size="sm" onClick={handleCopy}>
                   {copied ? (
-                    <Check className="w-4 h-4 text-emerald-500" />
+                    <Check className="w-4 h-4 text-indigo-500" />
                   ) : (
                     <Copy className="w-4 h-4" />
                   )}

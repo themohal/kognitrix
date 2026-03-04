@@ -91,7 +91,7 @@ export default function SettingsPage() {
             {saving ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : saved ? (
-              <Check className="w-4 h-4 mr-2 text-emerald-500" />
+              <Check className="w-4 h-4 mr-2 text-indigo-500" />
             ) : (
               <Save className="w-4 h-4 mr-2" />
             )}

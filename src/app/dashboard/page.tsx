@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { UsageChart } from "@/components/dashboard/UsageChart";
+import { FadeIn, SpotlightCard } from "@/components/ui/animations";
+import { motion } from "framer-motion";
 import {
   Zap, BarChart3, CreditCard, ArrowRight, Clock,
   TrendingUp, Activity,
@@ -17,6 +19,7 @@ import {
 interface UsageLog {
   id: string;
   service_id: string;
+  service_name: string;
   credits_used: number;
   status: string;
   channel: string;
@@ -102,6 +105,7 @@ export default function DashboardPage() {
             {
               id: detail.request_id,
               service_id: detail.service_id,
+              service_name: detail.service_name || detail.service_id,
               credits_used: detail.credits_used,
               status: "success",
               channel: detail.channel,
@@ -126,7 +130,7 @@ export default function DashboardPage() {
       label: "Credits Balance",
       value: balance,
       icon: CreditCard,
-      color: "text-emerald-500",
+      color: "text-indigo-500",
       href: "/dashboard/billing",
     },
     {
@@ -154,116 +158,116 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Overview of your Kognitrix AI usage and account.
-        </p>
-      </div>
+      <FadeIn>
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Overview of your Kognitrix AI usage and account.
+          </p>
+        </div>
+      </FadeIn>
 
       {/* Stats grid */}
       <StatsCards stats={stats} />
 
       {/* Request history chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-cyan-400" />
-            Request History (30 days)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <UsageChart data={chartData} />
-        </CardContent>
-      </Card>
+      <FadeIn delay={0.2}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-400" />
+              Request History (30 days)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UsageChart data={chartData} />
+          </CardContent>
+        </Card>
+      </FadeIn>
 
       {/* Quick actions */}
       <div className="grid sm:grid-cols-3 gap-4">
-        <Link href="/dashboard/services">
-          <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
-            <CardContent className="p-5 flex flex-col items-center text-center">
-              <Zap className="w-8 h-8 text-primary mb-3" />
-              <h3 className="font-semibold mb-1">Use Services</h3>
-              <p className="text-sm text-muted-foreground">
-                Generate content, code, images & more
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/dashboard/api-keys">
-          <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
-            <CardContent className="p-5 flex flex-col items-center text-center">
-              <BarChart3 className="w-8 h-8 text-primary mb-3" />
-              <h3 className="font-semibold mb-1">API Access</h3>
-              <p className="text-sm text-muted-foreground">
-                Get your API key for REST & MCP
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/dashboard/billing">
-          <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
-            <CardContent className="p-5 flex flex-col items-center text-center">
-              <CreditCard className="w-8 h-8 text-primary mb-3" />
-              <h3 className="font-semibold mb-1">Buy Credits</h3>
-              <p className="text-sm text-muted-foreground">
-                Top up credits or subscribe to a plan
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        {[
+          { href: "/dashboard/services", icon: Zap, title: "Use Services", desc: "Generate content, code, images & more" },
+          { href: "/dashboard/api-keys", icon: BarChart3, title: "API Access", desc: "Get your API key for REST & MCP" },
+          { href: "/dashboard/billing", icon: CreditCard, title: "Buy Credits", desc: "Top up credits or subscribe to a plan" },
+        ].map((item, i) => (
+          <FadeIn key={item.href} delay={0.3 + i * 0.08}>
+            <Link href={item.href}>
+              <SpotlightCard>
+                <Card className="hover:border-primary/50 transition-all duration-300 cursor-pointer hover-lift h-full">
+                  <CardContent className="p-5 flex flex-col items-center text-center">
+                    <motion.div
+                      whileHover={{ scale: 1.15, rotate: 5 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                    >
+                      <item.icon className="w-8 h-8 text-primary mb-3" />
+                    </motion.div>
+                    <h3 className="font-semibold mb-1">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground">{item.desc}</p>
+                  </CardContent>
+                </Card>
+              </SpotlightCard>
+            </Link>
+          </FadeIn>
+        ))}
       </div>
 
       {/* Recent activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            Recent Activity
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {usage.recent_logs.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Activity className="w-10 h-10 mx-auto mb-3 opacity-50" />
-              <p>No activity yet. Start using services to see your usage here.</p>
-              <Link href="/dashboard/services">
-                <Button variant="outline" className="mt-4">
-                  Explore Services <ArrowRight className="w-4 h-4 ml-1" />
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {usage.recent_logs.map((log) => (
-                <div
-                  key={log.id}
-                  className="flex items-center justify-between py-2 border-b border-border last:border-0"
-                >
-                  <div className="flex items-center gap-3">
-                    <Badge
-                      variant={log.status === "success" ? "success" : "destructive"}
-                      className="text-xs"
-                    >
-                      {log.status}
-                    </Badge>
-                    <div>
-                      <div className="text-sm font-medium">{log.service_id}</div>
-                      <div className="text-xs text-muted-foreground">
-                        via {log.channel} &bull;{" "}
-                        {new Date(log.created_at).toLocaleString()}
+      <FadeIn delay={0.45}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5" />
+              Recent Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {usage.recent_logs.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Activity className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                <p>No activity yet. Start using services to see your usage here.</p>
+                <Link href="/dashboard/services">
+                  <Button variant="outline" className="mt-4">
+                    Explore Services <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {usage.recent_logs.map((log, i) => (
+                  <motion.div
+                    key={log.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05, duration: 0.3 }}
+                    className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant={log.status === "success" ? "success" : "destructive"}
+                        className="text-xs"
+                      >
+                        {log.status}
+                      </Badge>
+                      <div>
+                        <div className="text-sm font-medium">{log.service_name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          via {log.channel} &bull;{" "}
+                          {new Date(log.created_at).toLocaleString()}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-sm font-medium">
-                    -{log.credits_used} credits
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    <div className="text-sm font-medium">
+                      -{log.credits_used} credits
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </FadeIn>
     </div>
   );
 }

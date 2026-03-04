@@ -1,9 +1,11 @@
-import crypto from "crypto";
-
-export function verifyWebhookSignature(
+/**
+ * Verify Lemon Squeezy webhook signature (HMAC-SHA256).
+ * Uses Web Crypto API for Vercel + Cloudflare compatibility.
+ */
+export async function verifyWebhookSignature(
   rawBody: string,
   signature: string
-): boolean {
+): Promise<boolean> {
   const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
 
   // Reject if secret is not configured
@@ -17,18 +19,33 @@ export function verifyWebhookSignature(
     return false;
   }
 
-  const hmac = crypto.createHmac("sha256", secret);
-  const digest = hmac.update(rawBody).digest("hex");
+  const digest = await hmacSHA256(secret, rawBody);
 
-  // timingSafeEqual requires equal-length buffers — reject length mismatch
-  const sigBuffer = Buffer.from(signature);
-  const digestBuffer = Buffer.from(digest);
+  return timingSafeEqual(signature, digest);
+}
 
-  if (sigBuffer.length !== digestBuffer.length) {
-    return false;
+async function hmacSHA256(secret: string, message: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(message));
+  return Array.from(new Uint8Array(sig))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
   }
-
-  return crypto.timingSafeEqual(sigBuffer, digestBuffer);
+  return result === 0;
 }
 
 export interface LemonSqueezyWebhookEvent {
