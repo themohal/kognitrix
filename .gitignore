@@ -67,3 +67,11 @@ CLAUDE.md
 /commands
 /agent-team
 mcp-publisher.exe
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
